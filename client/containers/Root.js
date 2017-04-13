@@ -4,12 +4,12 @@ import PropTypes from 'prop-types';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 
+import makeRoutes from '../routes';
+
 const Root = ({ store, history }) => (
   <Provider store={store}>
       <ConnectedRouter history={history} >
-          <div>
-          
-          </div>
+          <div children={makeRoutes()} />
       </ConnectedRouter>
   </Provider>
 );
