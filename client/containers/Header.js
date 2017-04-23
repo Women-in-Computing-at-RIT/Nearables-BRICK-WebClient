@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { replace, push } from 'react-router-redux';
 
-import { AppBar, Avatar, Chip, FlatButton } from 'material-ui';
+import { AppBar, Avatar, Chip, FlatButton, RaisedButton, Dialog } from 'material-ui';
 import { ActionPermIdentity } from 'material-ui/svg-icons';
 import s from './Header.css';
 
@@ -15,32 +15,97 @@ const handleLogout = (logoutFn) => () => {
   replace('/');
 };
 
+/*
+  General Header, renders the Authenticated Header or Plain Header (Not Authenticated) depending
+  on the current Auth state given by Redux.
+ */
 const Header = ({ loggedIn, user, login, logout }) => (
   <div className={s.container}>
     {loggedIn ? <AuthHeader user={user} logout={logout} /> : <PlainHeader login={login} />}
   </div>
 );
 
-const AuthHeader = ({ user: { photoURL, displayName }, logout }) => (
-  <AppBar
-    zDepth={2}
-    showMenuIconButton={false}
-    title="BRICK"
-    onTitleTouchTap={pushHome}
-    iconStyleRight={{
-      display: 'flex',
-      marginTop: 0,
-      alignItems: 'center',
-    }}
-    iconElementRight={
-      <Chip className={s.authChip} onRequestDelete={handleLogout(logout)}>
-        { !!photoURL && photoURL !== '' ? <Avatar src={photoURL} size={32}/> : <Avatar size={32}>{displayName[0]}</Avatar>}
-        { displayName }
-      </Chip>
-    }
-  />
-);
+/*
+  Authenticated Header
+ */
+class AuthHeader extends React.Component {
+  
+  constructor(props) {
+    super(props);
+    
+    this.state = {
+      logoutPrompt: false,
+      doLogout: handleLogout(props.logout),
+    };
+    
+    this.handleLogout = this.handleLogout.bind(this);
+    this.handleLogoutRequest = this.handleLogoutRequest.bind(this);
+  }
+  
+  /**
+   * Calls the logout function that dispatches a LOGOUT redux action and redirects to the index route. The state is
+   * also changed so as to dismiss the prompt.
+   */
+  handleLogout = () => {
+    const { doLogout } = this.state;
+    doLogout();
+    
+    this.setState({ logoutPrompt: false });
+  }
+  
+  /**
+   * Toggle Logout Prompt State (Visible <-> Not Visible)
+   */
+  handleLogoutRequest = () => this.setState({ logoutPrompt: !this.state.logoutPrompt });
+  
+  render() {
+    const { user } = this.props;
+    const { logoutPrompt } = this.state;
+    const { displayName, photoURL } = user;
+    
+    // Action Buttons for Logout Prompt
+    const actions = [
+      <RaisedButton label="Sign Out" onTouchTap={this.handleLogout} primary/>,
+      <RaisedButton label="Cancel" onTouchTap={this.handleLogoutRequest} seconday/>
+    ];
+    
+    return (
+      <div>
+        <AppBar
+          zDepth={2}
+          showMenuIconButton={false}
+          title="BRICK"
+          onTitleTouchTap={pushHome}
+          iconStyleRight={{
+            display: 'flex',
+            marginTop: 0,
+            alignItems: 'center',
+          }}
+          iconElementRight={
+            <Chip className={s.authChip} onRequestDelete={this.handleLogoutRequest}>
+              { !!photoURL && photoURL !== '' ? <Avatar src={photoURL} size={32}/> : <Avatar size={32}>{displayName[0]}</Avatar>}
+              { displayName }
+            </Chip>
+          }
+        />
+        <Dialog
+          title="Confirm Sign Out"
+          open={logoutPrompt}
+          actions={actions}
+          onRequestClose={this.handleLogoutRequest}
+          modal
+        >
+          Do you wish to sign out now? You will be returned to the landing page.
+        </Dialog>
+      </div>
+    );
+  }
+}
 
+/*
+  Stateless header. Does not need to prompt or anything, simply displays the header
+  with a Sign In Button
+ */
 const PlainHeader = ({ login }) => (
   <AppBar
     zDepth={2}
@@ -58,7 +123,6 @@ const PlainHeader = ({ login }) => (
     }
   />
 );
-
 
 Header.propTypes = {
   loggedIn: PropTypes.bool,
