@@ -10,14 +10,14 @@ import StartupActions from '../redux/Startup';
 const updateReducers = (store) => {
   const {reducerVersion, storeConfig: config} = ReduxPersist;
     
-  const startup = () => store.dispatch(StartupActions.startup());
+  const startup = () => store.dispatch(StartupActions.startupPersist());
     
   localForage.getItem('reducerVersion').then((localVersion) => {
     if(localVersion !== reducerVersion) {
       persistStore(store, config, startup).purge();
       localForage.setItem('reducerVersion', reducerVersion);
     } else
-            persistStore(store, config, startup);
+      persistStore(store, config, startup);
   }).catch(() => {
     persistStore(store, config, startup);
     localForage.setItem('reducerVersion', reducerVersion);

@@ -7,9 +7,10 @@ import rootSaga from '../sagas';
 export default (history) => {
     // Reducers!, Assemble!
   const rootReducer = combineReducers({
-        
-        
-        // React Router Redux
+    startup: require('./Startup').reducer,
+    auth: require('./Auth').reducer,
+    
+    // React Router Redux
     router: routerReducer,
   });
     

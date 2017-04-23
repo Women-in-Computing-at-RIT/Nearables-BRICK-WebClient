@@ -1,21 +1,23 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { AppBar, FlatButton, Chip, Avatar} from 'material-ui';
+import AuthActions, { isLoggedIn } from '../redux/Auth';
 
 class Landing extends React.Component {
   
+  static propTypes = {
+    loggedIn: PropTypes.bool,
+    login: PropTypes.func,
+  }
+  
   constructor(props) {
     super(props);
-    
-    this.loggingIn = false;
   }
   
   handleLogin = () => {
-    this.props.firebase.login({
-      provider: 'google',
-      type: 'redirect',
-    });
+    this.props.login();
   };
   
   renderForAuth = (auth) => {
@@ -29,6 +31,8 @@ class Landing extends React.Component {
   }
     
   render() {
+    const { loggedIn } = this.props;
+    console.log(loggedIn);
     const rest = this.renderForAuth(null);
     
     return (
@@ -40,8 +44,12 @@ class Landing extends React.Component {
   }
 }
 
-const mapStateToProps = ({}) => ({
-
+const mapStateToProps = (state) => ({
+  loggedIn: isLoggedIn(state),
 });
 
-export default connect(mapStateToProps)(Landing);
+const mapDispatchToProps = (dispatch) => ({
+  login: () => dispatch(AuthActions.loginRequest()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Landing);

@@ -1,5 +1,5 @@
+/* eslint-disable no-unused-vars */
 import 'babel-polyfill';
-import './firebase';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -10,10 +10,18 @@ import FastClick from 'fastclick';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 import Root from './containers/Root';
+import firebase from './firebase';
 import createStore from './redux';
+import StartupActions from './redux/Startup';
 
 const history = createHistory();
 const store = createStore(history);
+
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    store.dispatch(StartupActions.startupAuth());
+  }
+});
 
 // Eliminates the 300ms delay between a physical tap
 // and the firing of a click event on mobile browsers

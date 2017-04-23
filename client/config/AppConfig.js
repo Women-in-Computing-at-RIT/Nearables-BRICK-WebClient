@@ -6,6 +6,6 @@ export default {
     databaseURL: 'https://brick-game-ea6a1.firebaseio.com',
     projectId: 'brick-game-ea6a1',
     storageBucket: 'brick-game-ea6a1.appspot.com',
-    messagingSenderId: '759607781244'
-  }
+    messagingSenderId: '759607781244',
+  },
 };
