@@ -1,10 +1,11 @@
 import AppConf from './config/AppConfig';
+import * as firebase from 'firebase';
 
-export const FbConfig = AppConf.firebase;
+firebase.initializeApp(AppConf.firebase)
+
 export const FbReduxConfig = {
-    userProfile: 'organizers',
-    enableLogging: true
+  userProfile: 'organizers',
+  enableLogging: true
 };
 
-export const FirebaseRedux = require('react-redux-firebase');
-export default FirebaseRedux;
+export default firebase;

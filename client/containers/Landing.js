@@ -1,23 +1,47 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
-import { AppBar } from 'material-ui';
-import App from './App';
+import { AppBar, FlatButton, Chip, Avatar} from 'material-ui';
 
 class Landing extends React.Component {
+  
+  constructor(props) {
+    super(props);
     
-    constructor(props) {
-        super(props);
-    }
+    this.loggingIn = false;
+  }
+  
+  handleLogin = () => {
+    this.props.firebase.login({
+      provider: 'google',
+      type: 'redirect',
+    });
+  };
+  
+  renderForAuth = (auth) => {
+    if (!auth)
+      return <FlatButton label="G+ Login" onTouchTap={this.handleLogin} primary />;
+    else
+      return [
+        <Chip>{auth.email}</Chip>,
+        <Chip><Avatar src={auth.photoURL} />{auth.displayName}</Chip>
+      ];
+  }
     
-    render() {
-        return (
-            <App>
-                <AppBar/>
-            </App>
-        );
-    }
+  render() {
+    const rest = this.renderForAuth(null);
     
+    return (
+      <div>
+        <AppBar showMenuIconButton={false} title="BRICK Manager" zDepth={2}/>
+        { rest }
+      </div>
+    );
+  }
 }
 
-export default Landing;
+const mapStateToProps = ({}) => ({
+
+});
+
+export default connect(mapStateToProps)(Landing);

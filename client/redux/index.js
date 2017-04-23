@@ -4,17 +4,14 @@ import { routerReducer } from 'react-router-redux';
 import configureStore from './createStore';
 import rootSaga from '../sagas';
 
-import Firebase from '../firebase';
-
 export default (history) => {
     // Reducers!, Assemble!
-    const rootReducer = combineReducers({
+  const rootReducer = combineReducers({
         
         
         // React Router Redux
-        router: routerReducer,
-        firebase: Firebase.firebaseStateReducer
-    });
+    router: routerReducer,
+  });
     
-    return configureStore(rootReducer, rootSaga, history);
-}
+  return configureStore(rootReducer, rootSaga, history);
+};

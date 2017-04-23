@@ -8,20 +8,20 @@ import StartupActions from '../redux/Startup';
 // If the reducer used is outdated, clear the store since the state will be incompatible and update version
 // Either way, setup persistence.
 const updateReducers = (store) => {
-    const {reducerVersion, storeConfig: config} = ReduxPersist;
+  const {reducerVersion, storeConfig: config} = ReduxPersist;
     
-    const startup = () => store.dispatch(StartupActions.startup());
+  const startup = () => store.dispatch(StartupActions.startup());
     
-    localForage.getItem('reducerVersion').then((localVersion) => {
-        if(localVersion !== reducerVersion) {
-            persistStore(store, config, startup).purge();
-            localForage.setItem('reducerVersion', reducerVersion);
-        } else
+  localForage.getItem('reducerVersion').then((localVersion) => {
+    if(localVersion !== reducerVersion) {
+      persistStore(store, config, startup).purge();
+      localForage.setItem('reducerVersion', reducerVersion);
+    } else
             persistStore(store, config, startup);
-    }).catch(() => {
-        persistStore(store, config, startup);
-        localForage.setItem('reducerVersion', reducerVersion);
-    });
+  }).catch(() => {
+    persistStore(store, config, startup);
+    localForage.setItem('reducerVersion', reducerVersion);
+  });
 };
 
 export default {updateReducers};

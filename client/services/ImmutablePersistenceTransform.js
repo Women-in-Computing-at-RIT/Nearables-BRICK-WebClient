@@ -10,12 +10,12 @@ const toImmutable = (raw) => Immutable(raw);
 
 // Redux Persist Transformer Interface
 export default {
-    out: (state) => {
+  out: (state) => {
         // Prevents redux-persist from reducing state to a Plain Object
-        state.mergeDeep = R.identity;
-        return toImmutable(state);
-    },
-    in: (raw) => {
-        return fromImmutable(raw);
-    }
-}
+    state.mergeDeep = R.identity;
+    return toImmutable(state);
+  },
+  in: (raw) => {
+    return fromImmutable(raw);
+  }
+};

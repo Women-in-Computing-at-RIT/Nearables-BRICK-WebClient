@@ -1,5 +1,5 @@
 const Types = {
-  STARTUP: "STARTUP"
+  STARTUP: 'STARTUP'
 };
 
 const Creators = {
