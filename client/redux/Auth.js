@@ -1,5 +1,6 @@
 import keyMirror from 'keymirror';
 import Immutable from 'seamless-immutable';
+import is from 'is_js';
 
 import firebase from '../firebase';
 
@@ -7,7 +8,7 @@ const Types = keyMirror({
   LOGIN_REQUEST: null,
   LOGIN_ERROR: null,
   
-  SET_USER: null,
+  SET_CREDENTIALS: null,
   LOGOUT: null,
 });
 
@@ -25,10 +26,14 @@ Creators.loginError = (error) => ({
   },
 });
 
-Creators.setUser = (user) => ({
-  type: Types.SET_USER,
+Creators.setCredentials = ({ user, credential }) => ({
+  type: Types.SET_CREDENTIALS,
   payload: {
-    user,
+    // Unless you plan on making ImmutableJS *real* upset, User must be a POJO.
+    // This will at least automatically use Firebase's toJSON method if given a
+    // firebase.User object.
+    user: is.function(user.toJSON) ? user.toJSON() : user,
+    credential,
   },
 });
 
@@ -45,13 +50,14 @@ export const login = () => {
   firebase.auth().signInWithRedirect(provider);
 };
 
-export const loginError = (state, { error }) => state.merge({ fetching: false, authError: error });
-export const setUser = (state, { user }) => state.merge({ fetching: false, user });
+export const loginError = (state, { error }) => state.merge({ authError: error });
+export const setCredentials = (state, { user, credential }) => state.merge({ user, credential });
 export const logout = () => INITIAL_STATE;
 
 const INITIAL_STATE = Immutable({
   authError: null,
   user: null,
+  credential: null,
 });
 
 export function reducer(state = INITIAL_STATE, action) {
@@ -64,12 +70,39 @@ export function reducer(state = INITIAL_STATE, action) {
       return loginError(state, payload);
     case Types.LOGOUT:
       return logout();
-    case Types.SET_USER:
-      return setUser(state, payload);
+    case Types.SET_CREDENTIALS:
+      return setCredentials(state, payload);
     default:
       return state;
   }
 }
 
 export const isLoggedIn = (state) => !!state.auth.user;
+
+/**
+ * Selects the User object from the state tree. NOTE: Do not use this user object for Firebase API access, use
+ * `firebase.auth().currentUser` for that. This user object should still be in-sync info-wise.
+ *
+ * @param state
+ */
 export const getUser = (state) => state.auth.user;
+
+/**
+ * Selects the stored credential object retrieved on sign-in. Wholly unreliable as an API token, working through
+ * firebase APIs is recommended.
+ *
+ * @param state
+ * @deprecated
+ */
+export const getCredential = (state) => state.auth.credential;
+
+/**
+ * Selects bot the User object and Credential object stored from sign in. See getCredential and getUser for details.
+ *
+ * @param state
+ * @deprecated
+ */
+export const getUserInfo = (state) => ({
+  user: getUser(state),
+  credential: getCredential(state),
+});
