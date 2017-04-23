@@ -1,5 +1,8 @@
 # Project Specific
 
+# Auto-generated stuffs
+./public/index.html
+
 # Used for postmerge git-hook
 # Don't commit, will confuse the hell out of npm-install-changed
 .npm-install-changed.json
