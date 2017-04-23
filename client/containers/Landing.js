@@ -37,7 +37,6 @@ class Landing extends React.Component {
     
     return (
       <div>
-        <AppBar showMenuIconButton={false} title="BRICK Manager" zDepth={2}/>
         { rest }
       </div>
     );

@@ -77,7 +77,9 @@ export function reducer(state = INITIAL_STATE, action) {
   }
 }
 
-export const isLoggedIn = (state) => !!state.auth.user;
+const selectAuthStore = (state) => is.existy(state.auth) ? state.auth : state;
+
+export const isLoggedIn = (state) => !!selectAuthStore(state).user;
 
 /**
  * Selects the User object from the state tree. NOTE: Do not use this user object for Firebase API access, use
@@ -85,7 +87,7 @@ export const isLoggedIn = (state) => !!state.auth.user;
  *
  * @param state
  */
-export const getUser = (state) => state.auth.user;
+export const getUser = (state) => selectAuthStore(state).user;
 
 /**
  * Selects the stored credential object retrieved on sign-in. Wholly unreliable as an API token, working through
@@ -94,7 +96,7 @@ export const getUser = (state) => state.auth.user;
  * @param state
  * @deprecated
  */
-export const getCredential = (state) => state.auth.credential;
+export const getCredential = (state) => selectAuthStore(state).credential;
 
 /**
  * Selects bot the User object and Credential object stored from sign in. See getCredential and getUser for details.

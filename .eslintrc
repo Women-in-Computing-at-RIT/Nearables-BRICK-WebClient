@@ -23,7 +23,7 @@
       "error",
       "always-multiline"
     ],
-    "no-unused-vars": "warn",
+    "no-unused-vars": 0,
     "indent": [
       "error",
       2,

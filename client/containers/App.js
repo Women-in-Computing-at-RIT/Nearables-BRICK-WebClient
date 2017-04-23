@@ -3,10 +3,13 @@ import React from 'react';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
+import Header from './Header';
+
 const App = ({children}) => (
   <MuiThemeProvider>
     <div>
-        {children}
+      <Header />
+      {children}
     </div>
   </MuiThemeProvider>
 );
