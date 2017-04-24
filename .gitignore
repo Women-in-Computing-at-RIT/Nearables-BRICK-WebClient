@@ -1,7 +1,7 @@
 # Project Specific
 
 # Auto-generated stuffs
-./public/index.html
+public/
 
 # Used for postmerge git-hook
 # Don't commit, will confuse the hell out of npm-install-changed

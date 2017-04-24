@@ -8,6 +8,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const HtmlWebpackHarddiskPlugin = require('html-webpack-harddisk-plugin');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const pkg = require('./package.json');
 
 const isDebug = global.DEBUG === false ? false : !process.env.RELEASE;
@@ -62,9 +63,7 @@ const config = {
       filename: '../index.html',
     }),
     new HtmlWebpackHarddiskPlugin(),
-    new ScriptExtHtmlWebpackPlugin({
-      defaultAttribute: 'defer',
-    }),
+    new ScriptExtHtmlWebpackPlugin(),
     new webpack.LoaderOptionsPlugin({
       debug: isDebug,
       options: {
@@ -129,21 +128,6 @@ const config = {
         loader: `babel-loader?${JSON.stringify(babelConfig)}`,
       },
       {
-        test: /\.css/,
-        loaders: [
-          'style-loader',
-          `css-loader?${JSON.stringify({
-            sourceMap: isDebug,
-                        // CSS Modules https://github.com/css-modules/css-modules
-            modules: true,
-            localIdentName: isDebug ? '[name]_[local]_[hash:base64:3]' : '[hash:base64:4]',
-                        // CSS Nano http://cssnano.co/options/
-            minimize: !isDebug,
-          })}`,
-          'postcss-loader',
-        ],
-      },
-      {
         test: /\.(png|jpg|jpeg|gif|svg|woff|woff2)(\?.*)$/,
         loader: 'url-loader?limit=10000',
       },
@@ -161,6 +145,29 @@ babelConfig.presets[babelConfig.presets.indexOf('latest')] = ['latest', {
 }];
 
 if(!isDebug) {
+  config.module.loaders.push({
+    test: /\.css$/,
+    use:
+      ExtractTextPlugin.extract({
+        fallback: 'style-loader',
+        use: [
+          `css-loader?${JSON.stringify({
+            soureMap: true,
+            // CSS Modules https://github.com/css-modules/css-modules
+            modules: true,
+            localIdentName: '[name]_[local]_[hash:base64:3]',
+            // CSS Nano http://cssnano.co/options/
+            importLoaders: true,
+          })}`,
+          'postcss-loader',
+        ],
+      }),
+  });
+  
+  config.plugins.push(new ExtractTextPlugin({
+    filename: '[name].css?[hash]',
+    allChunks: true,
+  }));
   config.plugins.push(new webpack.optimize.UglifyJsPlugin({ compress: {warnings: isVerbose} }));
   config.plugins.push(new webpack.optimize.AggressiveMergingPlugin());
 }
@@ -168,6 +175,23 @@ if(!isDebug) {
 if(isDebug && useHMR) {
   babelConfig.plugins.unshift('react-hot-loader/babel');
   config.entry.unshift('react-hot-loader/patch', 'webpack-hot-middleware/client');
+  
+  config.module.loaders.push({
+    test: /\.css/,
+    loaders: [
+      'style-loader',
+      `css-loader?${JSON.stringify({
+        sourceMap: isDebug,
+        // CSS Modules https://github.com/css-modules/css-modules
+        modules: true,
+        localIdentName: isDebug ? '[name]_[local]_[hash:base64:3]' : '[hash:base64:4]',
+        // CSS Nano http://cssnano.co/options/
+        minimize: !isDebug,
+      })}`,
+      'postcss-loader',
+    ],
+  });
+  
   config.plugins.push(new webpack.HotModuleReplacementPlugin());
   config.plugins.push(new BrowserSyncPlugin({
     host: 'localhost',
