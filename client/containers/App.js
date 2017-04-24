@@ -9,15 +9,17 @@ import Halogen from 'halogen';
 
 import Header from './Header';
 import { isFullyLoaded } from '../redux/Startup';
+import AppMuiTheme from './AppMuiTheme';
+
 import s from './App.css';
 
 const App = ({children, isLoaded}) =>
   isLoaded ?
     (
-      <MuiThemeProvider>
+      <MuiThemeProvider muiTheme={AppMuiTheme} >
         <div>
           <Header />
-          {children} 
+          {children}
         </div>
       </MuiThemeProvider>
     ) :
