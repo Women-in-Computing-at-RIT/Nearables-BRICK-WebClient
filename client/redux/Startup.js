@@ -1,6 +1,9 @@
 import keyMirror from 'keymirror';
 import Immutable from 'seamless-immutable';
 
+import is from 'is_js';
+import R from 'ramda';
+
 const Types = keyMirror({
   STARTUP_PERSIST: null,
   STARTUP_AUTH: null,
@@ -33,4 +36,12 @@ export const reducer = (state = INITIAL_STATE, action) => {
     default:
       return state;
   }
+};
+
+export const isFullyLoaded = (state) => {
+  const values = Object.values(state.startup);
+  return R.all(
+    is.truthy,
+    R.filter((x) => is.boolean(x), values)
+  );
 };

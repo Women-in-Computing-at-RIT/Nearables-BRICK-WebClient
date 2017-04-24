@@ -1,11 +1,17 @@
-import { select, call, put } from 'redux-saga/effects';
+import { select, call, put, take } from 'redux-saga/effects';
+
 import AuthActions, { isLoggedIn, getUserInfo } from '../redux/Auth';
+import { StartupTypes } from '../redux/Startup';
 
 import fbPromise from './firebasePromiseProxy';
 import firebase from '../firebase';
 
 export function * startupAuth() {
   const loggedIn = yield select(isLoggedIn);
+  const persistDone = yield select((state) => state.startup.persistStarted);
+  
+  if (!persistDone)
+    yield take(StartupTypes.STARTUP_PERSIST);
   
   // No need to check if we are somehow logged in already...
   if (!loggedIn) {

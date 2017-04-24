@@ -17,7 +17,8 @@ import StartupActions from './redux/Startup';
 const history = createHistory();
 const store = createStore(history);
 
-firebase.auth().onAuthStateChanged((user) => {
+firebase.auth
+().onAuthStateChanged((user) => {
   if (user) {
     store.dispatch(StartupActions.startupAuth());
   }

@@ -6,9 +6,9 @@ const REDUX_PERSIST = {
   reducerVersion: '4',
   storeConfig: {
     storage: localForage,
-    blacklist: [],
-    transforms: [immutablePersistenceTransform]
-  }
+    blacklist: ['startup', 'auth.user'],
+    transforms: [immutablePersistenceTransform],
+  },
 };
 
 export default REDUX_PERSIST;
