@@ -10,19 +10,14 @@ import FastClick from 'fastclick';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 import Root from './containers/Root';
-import firebase from './firebase';
 import createStore from './redux';
-import StartupActions from './redux/Startup';
+import { firebaseSubscriptions } from './subscriptions';
 
 const history = createHistory();
 const store = createStore(history);
 
-firebase.auth
-().onAuthStateChanged((user) => {
-  if (user) {
-    store.dispatch(StartupActions.startupAuth());
-  }
-});
+// Register Redux subscriptions that firebase can/needs to use.
+firebaseSubscriptions(store.dispatch);
 
 // Eliminates the 300ms delay between a physical tap
 // and the firing of a click event on mobile browsers

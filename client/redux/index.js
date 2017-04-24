@@ -9,6 +9,7 @@ export default (history) => {
   const rootReducer = combineReducers({
     startup: require('./Startup').reducer,
     auth: require('./Auth').reducer,
+    events: require('./Event').reducer,
     
     // React Router Redux
     router: routerReducer,
