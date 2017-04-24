@@ -18,7 +18,7 @@ class Landing extends React.Component {
   render() {
     const { loggedIn } = this.props;
     
-    if (loggedIn) {
+    if (!loggedIn) {
       return (
         <div>
         </div>

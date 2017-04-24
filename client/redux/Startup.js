@@ -4,6 +4,8 @@ import Immutable from 'seamless-immutable';
 import is from 'is_js';
 import R from 'ramda';
 
+import PersistConfig from '../config/ReduxPersistConfig';
+
 const Types = keyMirror({
   STARTUP_PERSIST: null,
   STARTUP_AUTH: null,
@@ -18,7 +20,7 @@ export const StartupTypes = Types;
 export default Creators;
 
 const INITIAL_STATE = Immutable({
-  persistStarted: false,
+  persistStarted: !PersistConfig.active,
   authStarted: false,
 });
 

@@ -51,6 +51,7 @@
     "browser-sync": "^2.18.8",
     "browser-sync-webpack-plugin": "^1.1.4",
     "cpy": "^5.0.0",
+    "cross-env": "^4.0.0",
     "css-loader": "^0.28.0",
     "del": "^2.2.2",
     "enzyme": "^2.8.1",
@@ -135,11 +136,11 @@
     "lint": "npm run eslint && npm run stylelint",
     "test": "ava --color --verbose",
     "test:watch": "ava --color --verbose --watch",
-    "build": "node ./node_modules/webpack/bin/webpack --progress --colors",
-    "build:release": "set RELEASE=1 && node ./node_modules/webpack/bin/webpack --progress --colors --env.release",
+    "build": "webpack --progress --colors",
+    "build:release": "cross-env RELEASE=1 webpack --progress --colors --env.release",
     "deploy": "npm run build:release && firebase deploy",
     "start": "node dev",
     "postcheckout": "echo Checking NPM packages for this branch && npm run postmerge",
-    "postmerge": "echo Checking for NPM package changes && node ./node_modules/npm-install-changed/index.js"
+    "postmerge": "echo Checking for NPM package changes && npm-install-changed && cd functions && npm-install-changed && cd .."
   }
 }
