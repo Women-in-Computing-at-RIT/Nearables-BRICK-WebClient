@@ -4,7 +4,7 @@ import { StartupTypes } from '../redux/Startup';
 import { AuthTypes } from '../redux/Auth';
 import { EventTypes } from '../redux/Event';
 
-import { onAuthSaga } from './General';
+import { onAuthSaga, onLogout } from './General';
 import { startupAuth } from './Startup';
 import { loadAndListenEvents, addEventToRemote, removeEventFromRemote } from './Event';
 
@@ -22,5 +22,6 @@ export default function * root() {
     // Listen for new credentials and fire off some Authentication
     // dependent actions that would be great to start early.
     takeLatest(AuthTypes.SET_CREDENTIALS, onAuthSaga),
+    takeLatest(AuthTypes.LOGOUT, onLogout),
   ];
 }

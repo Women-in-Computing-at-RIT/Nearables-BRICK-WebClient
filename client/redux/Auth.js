@@ -46,9 +46,10 @@ Creators.logout = () => ({
 export const AuthTypes = Types;
 export default Creators;
 
-export const login = () => {
+export const login = (state) => {
   const provider = new firebase.auth.GoogleAuthProvider();
   firebase.auth().signInWithRedirect(provider);
+  return state;
 };
 
 export const loginError = (state, { error }) => state.merge({ authError: error });

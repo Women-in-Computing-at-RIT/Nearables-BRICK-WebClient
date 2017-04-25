@@ -1,5 +1,6 @@
 /* eslint-disable no-constant-condition */
 import { put, call } from 'redux-saga/effects';
+import { replace } from 'react-router-redux';
 
 import EventActions from '../redux/Event';
 import firebase from '../firebase';
@@ -27,5 +28,11 @@ export function * onAuthSaga({ payload }) {
   
   yield [
     put(EventActions.getEvents(user)),
+  ];
+}
+
+export function * onLogout({ payload }) {
+  yield [
+    put(replace('/')),
   ];
 }

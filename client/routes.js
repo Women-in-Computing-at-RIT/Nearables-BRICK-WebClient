@@ -1,10 +1,14 @@
 import React from 'react';
-import { Route } from 'react-router';
+import { Route, Switch } from 'react-router';
 
 import Landing from './containers/pages/Landing';
+import UserPage from './containers/pages/UserPage';
 
 export const makeRoutes = () => (
-    <Route exact path='/' component={Landing}/>
+    <Switch>
+      <Route exact path='/' component={Landing}/>
+      <Route path='/u' component={UserPage} />
+    </Switch>
 );
 
 export default makeRoutes;

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { replace, push } from 'react-router-redux';
+import { push } from 'react-router-redux';
 
 import { AppBar, Avatar, Chip, FlatButton, RaisedButton, Dialog } from 'material-ui';
 import { ActionPermIdentity } from 'material-ui/svg-icons';
@@ -9,19 +9,13 @@ import s from './Header.css';
 
 import AuthActions, { isLoggedIn, getUser } from '../redux/Auth';
 
-const pushHome = () => push('/');
-const handleLogout = (logoutFn) => () => {
-  logoutFn();
-  replace('/');
-};
-
 /*
   General Header, renders the Authenticated Header or Plain Header (Not Authenticated) depending
   on the current Auth state given by Redux.
  */
-const Header = ({ loggedIn, user, login, logout }) => (
+const Header = ({ loggedIn, user, login, logout, goHome }) => (
   <div className={s.container}>
-    {loggedIn ? <AuthHeader user={user} logout={logout} /> : <PlainHeader login={login} />}
+    {loggedIn ? <AuthHeader user={user} logout={logout} goHome={goHome}/> : <PlainHeader login={login} goHome={goHome} />}
   </div>
 );
 
@@ -35,7 +29,6 @@ class AuthHeader extends React.Component {
     
     this.state = {
       logoutPrompt: false,
-      doLogout: handleLogout(props.logout),
     };
     
     this.handleLogout = this.handleLogout.bind(this);
@@ -47,8 +40,8 @@ class AuthHeader extends React.Component {
    * also changed so as to dismiss the prompt.
    */
   handleLogout = () => {
-    const { doLogout } = this.state;
-    doLogout();
+    const { logout } = this.props;
+    logout();
     
     this.setState({ logoutPrompt: false });
   }
@@ -59,7 +52,7 @@ class AuthHeader extends React.Component {
   handleLogoutRequest = () => this.setState({ logoutPrompt: !this.state.logoutPrompt });
   
   render() {
-    const { user } = this.props;
+    const { user, goHome } = this.props;
     const { logoutPrompt } = this.state;
     const { displayName, photoURL } = user;
     
@@ -75,7 +68,7 @@ class AuthHeader extends React.Component {
           zDepth={2}
           showMenuIconButton={false}
           title="BRICK"
-          onTitleTouchTap={pushHome}
+          onTitleTouchTap={goHome}
           iconStyleRight={{
             display: 'flex',
             marginTop: 0,
@@ -106,12 +99,12 @@ class AuthHeader extends React.Component {
   Stateless header. Does not need to prompt or anything, simply displays the header
   with a Sign In Button
  */
-const PlainHeader = ({ login }) => (
+const PlainHeader = ({ login, goHome }) => (
   <AppBar
     zDepth={2}
     showMenuIconButton={false}
     title="BRICK"
-    onTitleTouchTap={pushHome}
+    onTitleTouchTap={goHome}
     iconElementRight={
       <FlatButton
         label="Google Sign In"
@@ -128,16 +121,19 @@ Header.propTypes = {
   loggedIn: PropTypes.bool,
   login: PropTypes.func,
   logout: PropTypes.func,
+  goHome: PropTypes.func,
   user: PropTypes.object,
 };
 
 AuthHeader.propTypes = {
   logout: PropTypes.func.isRequired,
   user: PropTypes.object.isRequired,
+  goHome: PropTypes.func.isRequired,
 };
 
 PlainHeader.propTypes = {
   login: PropTypes.func.isRequired,
+  goHome: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state) => ({
@@ -148,6 +144,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => ({
   login: () => dispatch(AuthActions.loginRequest()),
   logout: () => dispatch(AuthActions.logout()),
+  goHome: () => dispatch(push('/')),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

@@ -9,18 +9,27 @@ import makeRoutes from '../routes';
 
 import DevTools from './components/DevTools';
 
-const Root = ({ store, history }) => (
-  <Provider store={store}>
-    <ConnectedRouter history={history} >
-      <div>
-        <App>
-          <div children={makeRoutes()} />
-        </App>
-        <DevTools/>
-      </div>
-    </ConnectedRouter>
-  </Provider>
-);
+class Root extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  
+  render() {
+    const { store, history } = this.props;
+    return (
+      <Provider store={store}>
+        <div>
+          <App>
+            <ConnectedRouter history={history} >
+              <div children={makeRoutes()} />
+            </ConnectedRouter>
+          </App>
+          <DevTools/>
+        </div>
+      </Provider>
+    );
+  }
+}
 
 Root.propTypes = {
   store: PropTypes.object.isRequired,
