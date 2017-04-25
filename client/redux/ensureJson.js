@@ -1,5 +1,29 @@
 import is from 'is_js';
 
+import { either, hasIn, when, ifElse, identity, map, isArrayLike, pipe, always, invoker } from 'ramda';
+
+const invokeToJson    = invoker(0, 'toJSON');
+const invokeAsMutable = invoker(0, 'asMutable');
+const nothing         = always(null);
+const isObject        = is.object;
+
+const isImmutable       = hasIn('asMutable');
+const isFirebaseObject  = hasIn('toJSON');
+const isEasyToCoerce    = either(isImmutable, isFirebaseObject);
+const isProcessable     = either(isObject, isArrayLike);
+
+const coerceFirebase  = ifElse(isFirebaseObject, invokeToJson, nothing);
+const coerceImmutable = ifElse(isImmutable, invokeAsMutable, nothing);
+const easyCoerce      = either(coerceFirebase, coerceImmutable);
+
+const coerceObject = when(isObject, (x) => toJsonEnsured(x));
+const coerceArray  = when(isArrayLike, map((x) => toJsonEnsured(x)));
+const coerceToJson = pipe(coerceObject, coerceArray, identity);
+
+const forceCoerce   = map(coerceToJson);
+const toJson        = ifElse(isEasyToCoerce, easyCoerce, forceCoerce);
+const toJsonEnsured = when(isProcessable, toJson);
+
 /**
  * Given an object, attempts to return a JSON representation of that object. A JSON representation
  * is a Plain Object representation. That is, only easily serializable properties are kept.
@@ -18,45 +42,4 @@ import is from 'is_js';
  * @returns {*} Json Representation of given object (Simple JavaScript Object) [False by Default]
  * @throws Error If not given an object OR if all conditions fail and `force` is set to false.
  */
-export default function ensureJson(object) {
-  if (is.not.object(object))
-    throw new Error('Attempt to turn something that isn\'t an object into JSON.');
-  
-  if (is.array(object))
-    return object.map(x => ensureJson(x));
-  
-  // Firebase Objects
-  if ('toJSON' in object) {
-    return object.toJSON();
-  }
-  
-  // Immutables
-  if ('asMutable' in object)
-    return ensureJson(object.asMutable());
-  // Best Effort Attempt to convert some object to a JSON representation
-  return forceToJson(object);
-}
-
-function forceToJson(object) {
-  const keys = Object.keys(object);
-  const result = {};
-  for (const key of keys) {
-    let value = object[key];
-    
-    // Ignore functions and prototype properties
-    if (is.function(value) || key.indexOf('proto') >= 0 || key.indexOf('prototype') >= 0)
-      continue;
-    
-    // Deal with nested structures (or at least try to)
-    if (is.object(value))
-      value = ensureJson(value);
-    else if (is.array(value)) {
-      value = value.map(x => ensureJson(x));
-    }
-    
-    result[key] = value;
-  }
-  
-  
-  return result;
-}
+export default toJsonEnsured;
