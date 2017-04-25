@@ -1,7 +1,8 @@
+import is from 'is_js';
 import R from 'ramda';
 import Immutable from 'seamless-immutable';
 
-const isImmutable = R.has('asMutable');
+const isImmutable = (x) => is.function(x.asMutable);
 const convertToJs = (state) => state.asMutable({deep: true});
 
 const fromImmutable = R.when(isImmutable, convertToJs);
@@ -17,5 +18,5 @@ export default {
   },
   in: (raw) => {
     return fromImmutable(raw);
-  }
+  },
 };

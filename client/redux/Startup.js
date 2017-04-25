@@ -13,7 +13,7 @@ const Types = keyMirror({
 
 const Creators = {
   startupPersist: () => ({type: Types.STARTUP_PERSIST}),
-  startupAuth: () => ({type: Types.STARTUP_AUTH}),
+  startupAuth: (user) => ({type: Types.STARTUP_AUTH, payload: { user }}),
 };
 
 export const StartupTypes = Types;

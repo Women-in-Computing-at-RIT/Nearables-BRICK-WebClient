@@ -15,32 +15,24 @@ import is from 'is_js';
  * dropped from the result.
  *
  * @param object Object to check
- * @param force Whether or not to force some result
  * @returns {*} Json Representation of given object (Simple JavaScript Object) [False by Default]
  * @throws Error If not given an object OR if all conditions fail and `force` is set to false.
  */
-export default function ensureJson(object, force = false) {
+export default function ensureJson(object) {
   if (is.not.object(object))
     throw new Error('Attempt to turn something that isn\'t an object into JSON.');
-  
-  if (is.json(object))
-    return object;
   
   if (is.array(object))
     return object.map(x => ensureJson(x));
   
   // Firebase Objects
-  if (is.function(object.toJSON))
+  if ('toJSON' in object) {
     return object.toJSON();
+  }
   
   // Immutables
-  if (is.function(object.asMutable))
-    return ensureJson(object.asMutable(), force);
-  
-  // We are not going to forcefully convert
-  if (!force)
-    throw new Error('Given object cannot be converted to a simple JSON object.');
-
+  if ('asMutable' in object)
+    return ensureJson(object.asMutable());
   // Best Effort Attempt to convert some object to a JSON representation
   return forceToJson(object);
 }
@@ -57,13 +49,14 @@ function forceToJson(object) {
     
     // Deal with nested structures (or at least try to)
     if (is.object(value))
-      value = ensureJson(value, true);
+      value = ensureJson(value);
     else if (is.array(value)) {
-      value = value.map(x => ensureJson(x, true));
+      value = value.map(x => ensureJson(x));
     }
     
     result[key] = value;
   }
+  
   
   return result;
 }

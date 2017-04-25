@@ -6,32 +6,26 @@ import { StartupTypes } from '../redux/Startup';
 import fbPromise from './firebasePromiseProxy';
 import firebase from '../firebase';
 
-export function * startupAuth() {
-  const loggedIn = yield select(isLoggedIn);
+export function * startupAuth({ payload: { user } }) {
   const persistDone = yield select((state) => state.startup.persistStarted);
   
   if (!persistDone)
     yield take(StartupTypes.STARTUP_PERSIST);
   
+  const loggedIn = yield select(isLoggedIn);
+  
   // No need to check if we are somehow logged in already...
-  if (!loggedIn) {
+  if (!loggedIn && user) {
     try {
-      // Attempt to see if we just re-directed from a sign-in
-      const result = yield call(fbPromise, firebase.auth().getRedirectResult());
-      
-      if (result.user) {
-        
-        // Extract user details and send to Auth Store
-        const {user, credential} = result;
-        yield put(AuthActions.setCredentials({
-          user,
-          credential,
-        }));
-      }
-    } catch (error) {
-      yield put(AuthActions.loginError(error));
+      // Extract user details and send to Auth Store
+      yield put(AuthActions.setCredentials({
+        user,
+        credential: null,
+      }));
+    } catch (e) {
+      yield put(AuthActions.loginError(e));
     }
-  } else {
+  } else if (user) {
     
     /*
       Currently it is believed there is no need to worry about token refresh since firebase makes assurances using the
@@ -42,8 +36,11 @@ export function * startupAuth() {
      */
     
     // Verify user logged in to Firebase is consistent with the user we know is logged in
-    const loggedInUser = firebase.auth().currentUser;
+    const loggedInUser = user ? user : firebase.auth().currentUser;
     const { user, credential } = yield select(getUserInfo);
+    
+    if (user.updateProfile)
+      yield call(fbPromise, user.updateProfile());
     
     if (user.uid === loggedInUser.uid) {
       // Ensure user details are consistent
@@ -53,5 +50,6 @@ export function * startupAuth() {
       yield put(AuthActions.logout());
       yield put(AuthActions.startupAuth());
     }
-  }
+  } else
+    yield put(AuthActions.logout());
 }

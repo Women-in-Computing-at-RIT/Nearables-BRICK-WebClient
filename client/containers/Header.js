@@ -66,7 +66,7 @@ class AuthHeader extends React.Component {
     // Action Buttons for Logout Prompt
     const actions = [
       <RaisedButton label="Sign Out" onTouchTap={this.handleLogout} primary/>,
-      <RaisedButton label="Cancel" onTouchTap={this.handleLogoutRequest} seconday/>
+      <RaisedButton label="Cancel" onTouchTap={this.handleLogoutRequest} secondary/>
     ];
     
     return (

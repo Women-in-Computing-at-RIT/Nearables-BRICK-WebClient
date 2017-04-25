@@ -2,6 +2,7 @@ import keyMirror from 'keymirror';
 import Immutable from 'seamless-immutable';
 import is from 'is_js';
 
+import ensureJson from './ensureJson';
 import firebase from '../firebase';
 
 const Types = keyMirror({
@@ -32,7 +33,7 @@ Creators.setCredentials = ({ user, credential }) => ({
     // Unless you plan on making ImmutableJS *real* upset, User must be a POJO.
     // This will at least automatically use Firebase's toJSON method if given a
     // firebase.User object.
-    user: is.function(user.toJSON) ? user.toJSON() : user,
+    user: ensureJson(user),
     credential,
   },
 });
