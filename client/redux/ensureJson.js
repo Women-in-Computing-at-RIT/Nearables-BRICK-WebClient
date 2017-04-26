@@ -1,14 +1,12 @@
-import is from 'is_js';
-
-import { either, hasIn, when, ifElse, identity, map, isArrayLike, pipe, always, invoker } from 'ramda';
+import { either, hasIn, when, ifElse, both, identity, map, isArrayLike, pipe, always, invoker, is, propIs } from 'ramda';
 
 const invokeToJson    = invoker(0, 'toJSON');
 const invokeAsMutable = invoker(0, 'asMutable');
 const nothing         = always(null);
-const isObject        = is.object;
+const isObject        = is(Object);
 
-const isImmutable       = hasIn('asMutable');
-const isFirebaseObject  = hasIn('toJSON');
+const isImmutable       = both(hasIn('asMutable'), propIs(Function, 'asMutable'));
+const isFirebaseObject  = both(hasIn('toJSON'), propIs(Function, 'toJSON'));
 const isEasyToCoerce    = either(isImmutable, isFirebaseObject);
 const isProcessable     = either(isObject, isArrayLike);
 
@@ -39,7 +37,7 @@ const toJsonEnsured = when(isProcessable, toJson);
  * dropped from the result.
  *
  * @param object Object to check
- * @returns {*} Json Representation of given object (Simple JavaScript Object) [False by Default]
+ * @returns {*} Json Representation of given object (Simple JavaScript Object)
  * @throws Error If not given an object OR if all conditions fail and `force` is set to false.
  */
 export default toJsonEnsured;

@@ -7,7 +7,7 @@ import firebase from '../firebase';
 
 import fbProxy from './firebasePromiseProxy';
 import ensureJson from '../redux/ensureJson';
-import { organizer } from '../services/BrickUtil';
+import { organizer } from '../lib/BrickRefs';
 
 /**
  * Takes a user and updates their organizer profile with the latest data. This boils down to a set call on

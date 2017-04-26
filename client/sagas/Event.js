@@ -4,7 +4,7 @@ import { call, put, cancelled, take } from 'redux-saga/effects';
 
 import EventActions from '../redux/Event';
 
-import RefPaths, { RefEvents, organizerEvents } from '../services/BrickUtil';
+import RefPaths, { RefEvents, organizerEvents } from '../lib/BrickRefs';
 import fbProxy from './firebasePromiseProxy';
 import firebase from '../firebase';
 
