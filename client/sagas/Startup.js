@@ -1,13 +1,27 @@
 import { select, call, put, take } from 'redux-saga/effects';
 
 import AuthActions, { isLoggedIn, getUserInfo } from '../redux/Auth';
-import { StartupTypes } from '../redux/Startup';
+import StartupActions, { StartupTypes } from '../redux/Startup';
 
-import fbPromise from './firebasePromiseProxy';
+import fbProxy from './firebasePromiseProxy';
+import { organizerPhotos, organizerDefaultPhoto } from '../lib/BrickRefs';
 import firebase from '../firebase';
 
-export function * startupAuth({ payload: { user } }) {
+function fetchPhotoUrl({ uid, photoURL }) {
+  const userPhotoRef = firebase.storage().ref(organizerPhotos({ uid }));
+  const defaultPhotoRef = firebase.storage().ref(organizerDefaultPhoto());
+  
+  return new Promise((resolve, reject) => {
+    userPhotoRef.getDownloadURL().then(resolve, reject);
+  }).catch(() => {
+    return fbProxy(defaultPhotoRef.getDownloadURL());
+  }).catch(() => Promise.resolve(photoURL));
+}
+
+
+export function * startupAuth({ payload: { user: userData } }) {
   const persistDone = yield select((state) => state.startup.persistStarted);
+  const user = userData ? userData.toJSON() : null;
   
   if (!persistDone)
     yield take(StartupTypes.STARTUP_PERSIST);
@@ -17,11 +31,14 @@ export function * startupAuth({ payload: { user } }) {
   // No need to check if we are somehow logged in already...
   if (!loggedIn && user) {
     try {
+      user.photoURL = yield call(fetchPhotoUrl, user);
+      
       // Extract user details and send to Auth Store
       yield put(AuthActions.setCredentials({
         user,
         credential: null,
       }));
+      yield put(StartupActions.startupAuthDone());
     } catch (e) {
       yield put(AuthActions.loginError(e));
     }
@@ -39,9 +56,6 @@ export function * startupAuth({ payload: { user } }) {
     const loggedInUser = user ? user : firebase.auth().currentUser;
     const { user, credential } = yield select(getUserInfo);
     
-    if (user.updateProfile)
-      yield call(fbPromise, user.updateProfile());
-    
     if (user.uid === loggedInUser.uid) {
       // Ensure user details are consistent
       yield put(AuthActions.setCredentials({ user: loggedInUser, credential }));
@@ -50,6 +64,8 @@ export function * startupAuth({ payload: { user } }) {
       yield put(AuthActions.logout());
       yield put(AuthActions.startupAuth());
     }
-  } else
+  } else {
     yield put(AuthActions.logout());
+    yield put(StartupActions.startupAuthDone());
+  }
 }

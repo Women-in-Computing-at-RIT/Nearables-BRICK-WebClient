@@ -4,21 +4,15 @@ import PropTypes from 'prop-types';
 class EventList extends React.Component {
   
   static propTypes = {
+    currentEvent: PropTypes.object.isRequired,
     events: PropTypes.arrayOf(PropTypes.object).isRequired,
-    onSelect: PropTypes.func.isRequired,
+    onEdit: PropTypes.func.isRequired,
+    onAdd: PropTypes.func.isRequired,
   };
-  
-  constructor(props) {
-    super(props);
-    
-    this.state = {
-      showEdit: false,
-      showAdd: false,
-      selected: null,
-    }
-  }
   
   render() {
   
   }
 }
+
+export default EventList;

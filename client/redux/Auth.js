@@ -10,6 +10,7 @@ const Types = keyMirror({
   LOGIN_ERROR: null,
   
   SET_CREDENTIALS: null,
+  SET_PHOTO_URL: null,
   LOGOUT: null,
 });
 
@@ -24,6 +25,13 @@ Creators.loginError = (error) => ({
   type: Types.LOGIN_ERROR,
   payload: {
     error,
+  },
+});
+
+Creators.setPhotoUrl = (url) => ({
+  type: Types.SET_PHOTO_URL,
+  payload: {
+    photoURL: url,
   },
 });
 
@@ -55,6 +63,7 @@ export const login = (state) => {
 export const loginError = (state, { error }) => state.merge({ authError: error });
 export const setCredentials = (state, { user, credential }) => state.merge({ user, credential });
 export const logout = () => INITIAL_STATE;
+export const setPhotoUrl = (state, { photoURL }) => state.merge({ user: Object.assign(state.user.asMutable(), { photoURL })});
 
 const INITIAL_STATE = Immutable({
   authError: null,
@@ -74,6 +83,8 @@ export function reducer(state = INITIAL_STATE, action) {
       return logout();
     case Types.SET_CREDENTIALS:
       return setCredentials(state, payload);
+    case Types.SET_PHOTO_URL:
+      return setPhotoUrl(state, payload);
     default:
       return state;
   }

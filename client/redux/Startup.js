@@ -9,11 +9,13 @@ import PersistConfig from '../config/ReduxPersistConfig';
 const Types = keyMirror({
   STARTUP_PERSIST: null,
   STARTUP_AUTH: null,
+  STARTUP_AUTH_DONE: null,
 });
 
 const Creators = {
   startupPersist: () => ({type: Types.STARTUP_PERSIST}),
   startupAuth: (user) => ({type: Types.STARTUP_AUTH, payload: { user }}),
+  startupAuthDone: () => ({type: Types.STARTUP_AUTH_DONE}),
 };
 
 export const StartupTypes = Types;
@@ -33,7 +35,7 @@ export const reducer = (state = INITIAL_STATE, action) => {
   switch (type) {
     case Types.STARTUP_PERSIST:
       return startupPersist(state);
-    case Types.STARTUP_AUTH:
+    case Types.STARTUP_AUTH_DONE:
       return startupAuth(state);
     default:
       return state;

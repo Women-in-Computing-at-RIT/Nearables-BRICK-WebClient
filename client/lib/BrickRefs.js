@@ -1,6 +1,8 @@
 import keyMirror from 'keymirror';
 import {pipe, map, toLower} from 'ramda';
 
+export const organizerDefaultPhoto = () => '/photos/organizers/default';
+export const organizerPhotos = ({ uid }) => `/photos/organizers/${uid}`;
 export const organizer = ({ uid }) => `/organizers/${uid}`;
 
 export const eventBase = () => '/events';
@@ -22,6 +24,8 @@ export const RefEvents = lowerKeyMirror({
 
 export default {
   organizer,
+  organizerDefaultPhoto,
+  organizerPhotos,
   organizerEvents,
   eventBase,
   event,
