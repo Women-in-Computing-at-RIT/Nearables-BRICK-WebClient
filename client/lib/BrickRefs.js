@@ -1,5 +1,4 @@
-import keyMirror from 'keymirror';
-import {pipe, map, toLower} from 'ramda';
+import { lowerKeyMirror } from './BrickUtils';
 
 export const organizerDefaultPhoto = () => '/photos/organizers/default';
 export const organizerPhotos = ({ uid }) => `/photos/organizers/${uid}`;
@@ -11,8 +10,6 @@ export const event = ({ id }) => `/${eventBase()}/${id}`;
 export const eventCreator = ({ id }) => `/events/${id}/organizer`;
 
 export const organizerEvents = ({ uid }) => `/organizer-events/${uid}`;
-
-const lowerKeyMirror = pipe(keyMirror, map(toLower));
 
 export const RefEvents = lowerKeyMirror({
   VALUE: null,

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { RaisedButton } from 'material-ui';
+import { Dialog } from 'material-ui';
 
 export default class EventEditDialog extends React.Component {
   
@@ -32,17 +32,9 @@ export default class EventEditDialog extends React.Component {
     const { event, onClose } = this.props;
     const { open } = this.state;
     
-    const actionElements = [
-      <RaisedButton  />
-    ];
-    
     return (
       <div></div>
     );
   }
   
 }
-
-const EditForm = (props) => {
-
-};
