@@ -13,11 +13,15 @@ import AppMuiTheme from './AppMuiTheme';
 
 import s from './App.css';
 
+//noinspection RequiredAttributes
 const App = ({children, isLoaded}) =>
   isLoaded ?
     (
       <MuiThemeProvider muiTheme={AppMuiTheme} >
-        <div>
+        <div style={{
+          minHeight: '100%',
+          width: '100%',
+        }}>
           <Header />
           {children}
         </div>
