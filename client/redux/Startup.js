@@ -44,8 +44,10 @@ export const reducer = (state = INITIAL_STATE, action) => {
 
 export const isFullyLoaded = (state) => {
   const values = Object.values(state.startup);
-  return R.all(
-    is.truthy,
-    R.filter((x) => is.boolean(x), values)
-  );
+  
+  for (const v of values)
+    if (!v)
+      return false;
+  
+  return true;
 };

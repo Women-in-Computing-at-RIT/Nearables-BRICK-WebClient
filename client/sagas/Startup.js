@@ -22,7 +22,7 @@ function fetchPhotoUrl({ uid, photoURL }) {
 export function * startupAuth({ payload: { user: userData } }) {
   const persistDone = yield select((state) => state.startup.persistStarted);
   const user = userData ? userData.toJSON() : null;
-  
+
   if (!persistDone)
     yield take(StartupTypes.STARTUP_PERSIST);
   
@@ -38,6 +38,7 @@ export function * startupAuth({ payload: { user: userData } }) {
         user,
         credential: null,
       }));
+      
       yield put(StartupActions.startupAuthDone());
     } catch (e) {
       yield put(AuthActions.loginError(e));
@@ -59,10 +60,11 @@ export function * startupAuth({ payload: { user: userData } }) {
     if (user.uid === loggedInUser.uid) {
       // Ensure user details are consistent
       yield put(AuthActions.setCredentials({ user: loggedInUser, credential }));
+      yield put(StartupActions.startupAuthDone());
     } else {
       // Logout current user and retry Auth Startup
       yield put(AuthActions.logout());
-      yield put(AuthActions.startupAuth());
+      yield put(AuthActions.startupAuth(loggedInUser));
     }
   } else {
     yield put(AuthActions.logout());
