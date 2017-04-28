@@ -63,6 +63,8 @@ class UserPage extends React.Component {
     const startMoment = Moments.fromDateAndTime(startDate, startTime);
     const duration = Moments.timeBetweenDates(startDate, startTime, endDate, endTime);
     
+    // TODO Add Event to Database and State
+    
     this.setState({ showAdd: false });
   }
   
@@ -72,6 +74,7 @@ class UserPage extends React.Component {
     const { events, currentEvent } = this.props;
     const { showAdd } = this.state;
     
+    // TODO Event Deletion
     return (
       <FluidContainer>
         <EventList
