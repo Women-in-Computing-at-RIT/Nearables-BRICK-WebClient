@@ -2,7 +2,7 @@ import keyMirror from 'keymirror';
 import Immutable from 'seamless-immutable';
 
 import ensureJson from './ensureJson';
-import { when, propEq, map, reject } from 'ramda';
+import R, { when, propEq, map, reject } from 'ramda';
 
 const Types = keyMirror({
   GET_EVENTS: null,
@@ -26,7 +26,7 @@ Creators.getEvents = (user) => ({
 Creators.setEvents = (events) => ({
   type: Types.SET_EVENTS,
   payload: {
-    events: ensureJson(events),
+    events: ensureJson(events) || [],
   },
 });
 
@@ -77,13 +77,15 @@ const INITIAL_STATE = Immutable({
 
 const replaceEvent = (event) => when(propEq('id', event.id), () => event);
 const modifyEvent = (event, xs) => map(replaceEvent(event), xs);
-const dropEvent = ({ id }, xs) => reject(propEq('id', event.id), xs);
+const dropEvent = ({ id }, xs) => reject(propEq('id', id), xs);
 
 const getEvents = (state) => state.merge({ ready: false });
 const setEvents = (state, { events }) => state.merge({ availableEvents: events, ready: true });
 const setCurrentEvent = (state, { event }) => state.merge({ currentEvent: event.toJSON ? event.toJSON() : event, ready: true });
 
-const addEvent = (state, { event }) => state.merge({ availableEvents: [ ...state.availableEvents, event ] });
+const forceToSet = R.uniqWith(R.prop('id'));
+
+const addEvent = (state, { event }) => state.merge({ availableEvents: forceToSet([ ...state.availableEvents, event ]) });
 const setEvent = (state, { event }) => state.merge({ availableEvents: modifyEvent(event, state.availableEvents) });
 const rmEvent = (state, { event }) => state.merge({ availableEvents: dropEvent(event, state.availableEvents) });
 
@@ -110,6 +112,6 @@ export const reducer = (state = INITIAL_STATE, action) => {
 
 export const isFullyReady = (state) => isReady(state) && hasCurrentEvent(state);
 export const isReady = (state) => state.events.ready;
-export const getAvailableEvents = (state) => state.events.availableEvents;
+export const getAvailableEvents = (state) => [...state.events.availableEvents];
 export const getCurrentEvent = (state) => state.events.currentEvent;
 export const hasCurrentEvent = (state) => !!getCurrentEvent(state);
