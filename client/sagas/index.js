@@ -21,7 +21,7 @@ export default function * root() {
     // General Sagas (last in sequence)
     // Listen for new credentials and fire off some Authentication
     // dependent actions that would be great to start early.
-    takeLatest(AuthTypes.SET_CREDENTIALS, onAuthSaga),
+    takeLatest(StartupTypes.STARTUP_AUTH_DONE, onAuthSaga),
     takeLatest(AuthTypes.LOGOUT, onLogout),
   ];
 }

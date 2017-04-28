@@ -2,13 +2,18 @@
 import { eventChannel } from 'redux-saga';
 import { call, put, cancelled, take } from 'redux-saga/effects';
 
+import invariant from 'invariant';
+
 import EventActions from '../redux/Event';
 
 import RefPaths, { RefEvents, organizerEvents, event, eventBase } from '../lib/BrickRefs';
+import { ensureCuid } from '../lib/BrickUtils';
 import fbProxy from './firebasePromiseProxy';
 import firebase from '../firebase';
 
 function setupChannelForEvents(user) {
+  invariant(user != null, 'Given a null/undefined value instead of user.');
+  
   return eventChannel(emitter => {
     const eventRef = firebase.database().ref(organizerEvents(user));
     
@@ -81,9 +86,7 @@ export function * addEventToRemote({ payload }) {
   const { event, isNew } = payload;
   
   if (isNew) {
-    if (!event.id)
-      event.id = firebase.database().ref(RefPaths.eventBase()).push().key;
-  
+    event.id = ensureCuid(event.id);
     const eventRef = firebase.database().ref(RefPaths.event(event));
     yield call(fbProxy, eventRef.set(event));
   }
@@ -93,9 +96,7 @@ export function * removeEventFromRemote({ payload }) {
   const { event, applyToDatabase } = payload;
   
   if(applyToDatabase) {
-    if (!event.id)
-      event.id = firebase.database().ref(RefPaths.eventBase()).push().key;
-  
+    event.id = ensureCuid(event.id);
     const eventRef = firebase.database().ref(RefPaths.event(event));
     yield call(fbProxy, eventRef.remove(event));
   }

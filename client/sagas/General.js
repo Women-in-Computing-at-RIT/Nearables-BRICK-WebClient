@@ -1,10 +1,13 @@
 /* eslint-disable no-constant-condition */
-import { put, call } from 'redux-saga/effects';
+import { put, call, select } from 'redux-saga/effects';
 import { delay } from 'redux-saga';
 import { replace } from 'react-router-redux';
 
+import invariant from 'invariant';
+import warning from 'warning';
+
 import EventActions from '../redux/Event';
-import AuthActions from '../redux/Auth';
+import AuthActions, { getUser, isLoggedIn } from '../redux/Auth';
 import firebase from '../firebase';
 
 import fbProxy from './firebasePromiseProxy';
@@ -18,14 +21,16 @@ import { organizer, organizerPhotos } from '../lib/BrickRefs';
  * @param user User to update
  */
 function * updateUserRef(user) {
+  invariant(user != null, 'Given a null/undefined value instead of user.');
   const userRef = firebase.database().ref(organizer(user));
   
   yield call(fbProxy, userRef.set(ensureJson(user)));
 }
 
 function * checkPhotoUrl(user) {
-  const photoRef = firebase.storage().ref(organizerPhotos(user));
+  invariant(user != null, 'Given a null/undefined value instead of user.');
   
+  const photoRef = firebase.storage().ref(organizerPhotos(user));
   const photoURL = decodeURIComponent(user.photoURL);
 
   // Wait for at most .5*(k+1)(2x+sk) milliseconds
@@ -42,8 +47,8 @@ function * checkPhotoUrl(user) {
     not ideal (GCS does not provide a reactive solution), so we stop polling and accept the fact the image won't appear
     until next page refresh (if the photo becomes available, otherwise this repeats).
    */
-  
-  while (attempts < maxAttempts && photoURL.indexOf('photos/organizers') >= 0 && photoURL.indexOf('/default') >= 0) {
+  const needsImageRegex = /^(?:\/photos\/organizers\/(?:.*\/)?default)$/g;
+  while (attempts < maxAttempts && needsImageRegex.test(photoURL)) {
     try {
       const url = yield call(fbProxy, photoRef.getDownloadURL());
       if (url)
@@ -56,8 +61,13 @@ function * checkPhotoUrl(user) {
   }
 }
 
-export function * onAuthSaga({ payload }) {
-  const { user } = payload;
+export function * onAuthSaga() {
+  const loggedIn = yield select(isLoggedIn);
+  
+  if (!loggedIn)
+    return;
+  
+  const user = yield select(getUser);
   
   yield* updateUserRef(user);
   
@@ -67,7 +77,7 @@ export function * onAuthSaga({ payload }) {
   ];
 }
 
-export function * onLogout({ payload }) {
+export function * onLogout() {
   firebase.auth().signOut();
   
   yield [

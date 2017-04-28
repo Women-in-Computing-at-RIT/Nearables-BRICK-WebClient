@@ -1,5 +1,8 @@
 import { select, call, put, take } from 'redux-saga/effects';
 
+import invariant from 'invariant';
+import warning from 'warning';
+
 import AuthActions, { isLoggedIn, getUserInfo } from '../redux/Auth';
 import StartupActions, { StartupTypes } from '../redux/Startup';
 
@@ -8,6 +11,9 @@ import { organizerPhotos, organizerDefaultPhoto } from '../lib/BrickRefs';
 import firebase from '../firebase';
 
 function fetchPhotoUrl({ uid, photoURL }) {
+  invariant(uid != null, 'Provided uid is null/undefined value.');
+  invariant(photoURL != null, 'Provided photoURL is null/undefined value.');
+  
   const userPhotoRef = firebase.storage().ref(organizerPhotos({ uid }));
   const defaultPhotoRef = firebase.storage().ref(organizerDefaultPhoto());
   
@@ -28,46 +34,30 @@ export function * startupAuth({ payload: { user: userData } }) {
   
   const loggedIn = yield select(isLoggedIn);
   
-  // No need to check if we are somehow logged in already...
-  if (!loggedIn && user) {
-    try {
-      user.photoURL = yield call(fetchPhotoUrl, user);
-      
-      // Extract user details and send to Auth Store
-      yield put(AuthActions.setCredentials({
-        user,
-        credential: null,
-      }));
-      
-      yield put(StartupActions.startupAuthDone());
-    } catch (e) {
-      yield put(AuthActions.loginError(e));
-    }
-  } else if (user) {
-    
-    /*
-      Currently it is believed there is no need to worry about token refresh since firebase makes assurances using the
-      long-lived refresh token it stores in the user object.
-      
-      This means we should not use the stored user object for api access. firebase.auth().currentUser should be used
-      for that.
-     */
-    
-    // Verify user logged in to Firebase is consistent with the user we know is logged in
-    const loggedInUser = user ? user : firebase.auth().currentUser;
-    const { user, credential } = yield select(getUserInfo);
-    
-    if (user.uid === loggedInUser.uid) {
-      // Ensure user details are consistent
-      yield put(AuthActions.setCredentials({ user: loggedInUser, credential }));
-      yield put(StartupActions.startupAuthDone());
-    } else {
-      // Logout current user and retry Auth Startup
+  // If we are already logged in... then that's strange but logout the current user if they are not the same.
+  if (loggedIn) {
+    const { user: storedUser } = yield select(getUserInfo);
+    if (storedUser.id !== user.id)
       yield put(AuthActions.logout());
-      yield put(AuthActions.startupAuth(loggedInUser));
-    }
-  } else {
+  } else if(loggedIn && !user) {
+    // Logged Out
     yield put(AuthActions.logout());
+  }
+  
+  try {
+    user.photoURL = yield call(fetchPhotoUrl, user);
+  } catch(e) {
+    // Photo URL Could not be retrieved
+    warning(!e, 'Unexpected error attempting to fetch photo url');
+    warning(!e, e);
+  }
+  
+  try {
+    if (user)
+      yield put(AuthActions.setCredentials({user}));
+  
     yield put(StartupActions.startupAuthDone());
+  } catch (e) {
+    yield put(AuthActions.loginError(e));
   }
 }
