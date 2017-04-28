@@ -5,7 +5,7 @@ import is from 'is_js';
 import ensureJson from './ensureJson';
 import firebase from '../firebase';
 
-const Types = keyMirror({
+export const AuthTypes = keyMirror({
   LOGIN_REQUEST: null,
   LOGIN_ERROR: null,
   
@@ -17,26 +17,26 @@ const Types = keyMirror({
 const Creators = {};
 
 Creators.loginRequest = () => ({
-  type: Types.LOGIN_REQUEST,
+  type: AuthTypes.LOGIN_REQUEST,
   payload: {},
 });
 
 Creators.loginError = (error) => ({
-  type: Types.LOGIN_ERROR,
+  type: AuthTypes.LOGIN_ERROR,
   payload: {
     error,
   },
 });
 
 Creators.setPhotoUrl = (url) => ({
-  type: Types.SET_PHOTO_URL,
+  type: AuthTypes.SET_PHOTO_URL,
   payload: {
     photoURL: url,
   },
 });
 
 Creators.setCredentials = ({ user, credential }) => ({
-  type: Types.SET_CREDENTIALS,
+  type: AuthTypes.SET_CREDENTIALS,
   payload: {
     // Unless you plan on making ImmutableJS *real* upset, User must be a POJO.
     // This will at least automatically use Firebase's toJSON method if given a
@@ -47,11 +47,10 @@ Creators.setCredentials = ({ user, credential }) => ({
 });
 
 Creators.logout = () => ({
-  type: Types.LOGOUT,
+  type: AuthTypes.LOGOUT,
   payload: {},
 });
 
-export const AuthTypes = Types;
 export default Creators;
 
 export const login = (state) => {
@@ -75,15 +74,15 @@ export function reducer(state = INITIAL_STATE, action) {
   const { type, payload } = action;
   
   switch (type) {
-    case Types.LOGIN_REQUEST:
+    case AuthTypes.LOGIN_REQUEST:
       return login(state);
-    case Types.LOGIN_ERROR:
+    case AuthTypes.LOGIN_ERROR:
       return loginError(state, payload);
-    case Types.LOGOUT:
+    case AuthTypes.LOGOUT:
       return logout();
-    case Types.SET_CREDENTIALS:
+    case AuthTypes.SET_CREDENTIALS:
       return setCredentials(state, payload);
-    case Types.SET_PHOTO_URL:
+    case AuthTypes.SET_PHOTO_URL:
       return setPhotoUrl(state, payload);
     default:
       return state;

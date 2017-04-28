@@ -2,9 +2,9 @@ import keyMirror from 'keymirror';
 import Immutable from 'seamless-immutable';
 
 import ensureJson from './ensureJson';
-import R, { when, propEq, map, reject } from 'ramda';
+import R, {map, propEq, reject, when} from 'ramda';
 
-const Types = keyMirror({
+export const EventTypes = keyMirror({
   GET_EVENTS: null,
   SET_EVENTS: null,
   SET_CURRENT_EVENT: null,
@@ -17,28 +17,28 @@ const Types = keyMirror({
 const Creators = {};
 
 Creators.getEvents = (user) => ({
-  type: Types.GET_EVENTS,
+  type: EventTypes.GET_EVENTS,
   payload: {
     user,
   },
 });
 
 Creators.setEvents = (events) => ({
-  type: Types.SET_EVENTS,
+  type: EventTypes.SET_EVENTS,
   payload: {
     events: ensureJson(events) || [],
   },
 });
 
 Creators.setCurrentEvent = (event) => ({
-  type: Types.SET_CURRENT_EVENT,
+  type: EventTypes.SET_CURRENT_EVENT,
   payload: {
     event: ensureJson(event),
   },
 });
 
 const createAddEvent = (event, isNew) => ({
-  type: Types.ADD_EVENT,
+  type: EventTypes.ADD_EVENT,
   payload: {
     event: ensureJson(event),
     isNew,
@@ -49,14 +49,14 @@ Creators.addEvent = (event) => createAddEvent(event, true);
 Creators.addEventDbCallback = (event) => createAddEvent(event, false);
 
 Creators.setEvent = (event) => ({
-  type: Types.SET_EVENT,
+  type: EventTypes.SET_EVENT,
   payload: {
     event: ensureJson(event),
   },
 });
 
 const createRemoveEvent = (event, applyToDatabase) => ({
-  type: Types.RM_EVENT,
+  type: EventTypes.RM_EVENT,
   payload: {
     event: ensureJson(event),
     applyToDatabase,
@@ -66,7 +66,6 @@ const createRemoveEvent = (event, applyToDatabase) => ({
 Creators.removeEvent = (event) => createRemoveEvent(event, true);
 Creators.removeEventDbCallback = (event) => createRemoveEvent(event, false);
 
-export const EventTypes = Types;
 export default Creators;
 
 const INITIAL_STATE = Immutable({
@@ -93,17 +92,17 @@ export const reducer = (state = INITIAL_STATE, action) => {
   const { type, payload } = action;
   
   switch(type) {
-    case Types.GET_EVENTS:
+    case EventTypes.GET_EVENTS:
       return getEvents(state, payload);
-    case Types.SET_EVENTS:
+    case EventTypes.SET_EVENTS:
       return setEvents(state, payload);
-    case Types.SET_CURRENT_EVENT:
+    case EventTypes.SET_CURRENT_EVENT:
       return setCurrentEvent(state, payload);
-    case Types.ADD_EVENT:
+    case EventTypes.ADD_EVENT:
       return addEvent(state, payload);
-    case Types.SET_EVENT:
+    case EventTypes.SET_EVENT:
       return setEvent(state, payload);
-    case Types.RM_EVENT:
+    case EventTypes.RM_EVENT:
       return rmEvent(state, payload);
     default:
       return state;
