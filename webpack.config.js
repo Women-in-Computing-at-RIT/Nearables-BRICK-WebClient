@@ -11,24 +11,26 @@ const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const pkg = require('./package.json');
 
-const isDebug = global.DEBUG === false ? false : !process.env.RELEASE;
+const isDebug = global.DEBUG === false ? false : process.env.NODE_ENV !== 'production';
 const isVerbose = process.argv.includes('--verbose') || process.argv.includes('-v');
 const useHMR = isDebug;
 const babelConfig = Object.assign({}, pkg.babel, {
   cacheDirectory: useHMR,
 });
 
-const del = require('del');
-del.sync(['./public/dist/*']);
+if(!process.env.PRESERVE_OUTPUT) {
+  const del = require('del');
+  del.sync(['./public/dist/*']);
+}
 
 const config = {
-    
+  
   context: path.resolve(__dirname, './client'),
-    
+  
   entry: [
     './main.js',
   ],
-    
+  
   output: {
     path: path.resolve(__dirname, './public/dist'),
     publicPath: 'dist/',
@@ -36,21 +38,21 @@ const config = {
     chunkFilename: isDebug ? '[id].js?[chunkhash]' : '[id].[chunkhash].js',
     sourcePrefix: '  ',
   },
-    
+  
   devtool: isDebug ? 'cheap-module-inline-source-map' : 'cheap-module-source-map',
-    
+  
   stats: {
     colors: true,
     reasons: isDebug,
     hash: isVerbose,
     version: isVerbose,
     timings: true,
-    chunks: isVerbose,
+    chunks: true,
     chunkModules: isVerbose,
     cached: isVerbose,
     cachedAssets: isVerbose,
   },
-    
+  
   plugins: [
     new webpack.optimize.OccurrenceOrderPlugin(),
     new webpack.DefinePlugin({
@@ -112,7 +114,7 @@ const config = {
       },
     }),
   ],
-    
+  
   resolveLoader: {
     moduleExtensions: ['-loader'],
   },
@@ -137,7 +139,7 @@ const config = {
       },
     ],
   },
-    
+  
 };
 
 babelConfig.presets[babelConfig.presets.indexOf('latest')] = ['latest', {
@@ -165,7 +167,7 @@ if(!isDebug) {
   });
   
   config.plugins.push(new ExtractTextPlugin({
-    filename: '[name].css?[hash]',
+    filename: '[name].[hash].css',
     allChunks: true,
   }));
   config.plugins.push(new webpack.optimize.UglifyJsPlugin({ compress: {warnings: isVerbose} }));
