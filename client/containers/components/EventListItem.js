@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 
 import { TableRow, TableRowColumn } from 'material-ui';
 import { Event } from '../../lib/BrickObjects';
@@ -10,7 +9,6 @@ class EventListItem extends React.Component {
   static propTypes = {
     event: PropTypes.object.isRequired,
     selected: PropTypes.bool.isRequired,
-    onSelected: PropTypes.func.isRequired,
     children: PropTypes.node,
   };
   
@@ -24,10 +22,10 @@ class EventListItem extends React.Component {
     const endTime = event.endTime;
     
     return (
-      <TableRow key={event.id} selected={selected} onRowClick={onSelected}>
+      <TableRow key={event.id} selected={selected}>
         <TableRowColumn>{event.name}</TableRowColumn>
-        <TableRowColumn>{startTime.calendar()}</TableRowColumn>
-        <TableRowColumn>{endTime.format('h:mm A')}</TableRowColumn>
+        <TableRowColumn>{startTime.format('MMM Do YYYY h:mm A')}</TableRowColumn>
+        <TableRowColumn>{endTime.format('MMM YYYY Do h:mm A')}</TableRowColumn>
         <TableRowColumn>{duration.humanize(false)}</TableRowColumn>
         <TableRowColumn>
           {this.props.children}
@@ -37,3 +35,5 @@ class EventListItem extends React.Component {
   }
   
 }
+
+export default EventListItem;
