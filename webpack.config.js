@@ -37,7 +37,7 @@ const config = {
     sourcePrefix: '  ',
   },
     
-  devtool: isDebug ? 'cheap-module-inline-source-map' : false,
+  devtool: isDebug ? 'cheap-module-inline-source-map' : 'cheap-module-source-map',
     
   stats: {
     colors: true,
