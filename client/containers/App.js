@@ -2,6 +2,7 @@ import './App.css';
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -19,8 +20,10 @@ const App = ({children, isLoaded}) =>
     (
       <MuiThemeProvider muiTheme={AppMuiTheme} >
         <div style={{
-          minHeight: '100%',
+          height: '100%',
           width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
         }}>
           <Header />
           {children}
@@ -29,6 +32,9 @@ const App = ({children, isLoaded}) =>
     ) :
     (
       <section className={s.loader}>
+        <Helmet>
+          <title>{'Loading All The Data...'}</title>
+        </Helmet>
         <div className={s.loaderContent}>
           <header className={s.loaderText}>Please Wait...</header>
           <div className={s.loaderGrid}>

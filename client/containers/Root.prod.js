@@ -9,11 +9,19 @@ import makeRoutes from '../routes';
 
 const Root = ({ store, history }) => (
   <Provider store={store}>
-    <ConnectedRouter history={history} >
+    <div style={{
+      height: 'inherit',
+      width: 'inherit',
+    }}>
       <App>
-        <div children={makeRoutes()} />
+        <ConnectedRouter history={history} >
+          <div style={{
+            flex: 1,
+            width: 'inherit',
+          }} children={makeRoutes()} />
+        </ConnectedRouter>
       </App>
-    </ConnectedRouter>
+    </div>
   </Provider>
 );
 

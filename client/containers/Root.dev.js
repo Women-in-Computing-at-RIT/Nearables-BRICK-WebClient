@@ -10,18 +10,20 @@ import makeRoutes from '../routes';
 import DevTools from './components/DevTools';
 
 class Root extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  
   render() {
     const { store, history } = this.props;
     return (
       <Provider store={store}>
-        <div>
+        <div style={{
+          height: 'inherit',
+          width: 'inherit',
+        }}>
           <App>
             <ConnectedRouter history={history} >
-              <div children={makeRoutes()} />
+              <div style={{
+                flex: 1,
+                width: 'inherit',
+              }} children={makeRoutes()} />
             </ConnectedRouter>
           </App>
           <DevTools/>
