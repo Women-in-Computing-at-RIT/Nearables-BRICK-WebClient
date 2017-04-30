@@ -6,9 +6,9 @@ import moment from 'moment';
 import { Paper, FloatingActionButton, Toolbar, ToolbarGroup,
   Toggle, ToolbarTitle, SelectField, MenuItem, Dialog, RaisedButton,
   Table, TableHeader, TableBody, TableHeaderColumn, TableRow } from 'material-ui';
-import { ContentAdd, ContentCreate, ContentClear, ActionVisibility } from 'material-ui/svg-icons';
+import { ContentAdd, ContentCreate, ContentClear, ActionVisibility, NavigationApps } from 'material-ui/svg-icons';
 
-import { invertComparator } from '../../lib/BrickUtils';
+import { invertComparator } from '../../lib/utils';
 import EventItem from './EventListItem';
 
 import s from './EventList.css';
@@ -47,6 +47,7 @@ class EventList extends React.Component {
     onDelete: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
+    onQrCode: PropTypes.func.isRequired,
   };
   
   constructor(props) {
@@ -104,13 +105,13 @@ class EventList extends React.Component {
   
   generateActionButtons = (event) => (
     <div>
-      <FloatingActionButton mini={true} onTouchTap={this.handleViewTap(event)}>
+      <FloatingActionButton mini onTouchTap={this.handleViewTap(event)}>
         <ActionVisibility/>
       </FloatingActionButton>
-      <FloatingActionButton mini={true} onTouchTap={this.handleEditTap(event)}>
+      <FloatingActionButton mini onTouchTap={this.handleEditTap(event)}>
         <ContentCreate/>
       </FloatingActionButton>
-      <FloatingActionButton mini={true} onTouchTap={this.handleDeleteTap(event)} secondary>
+      <FloatingActionButton mini onTouchTap={this.handleDeleteTap(event)} secondary>
         <ContentClear/>
       </FloatingActionButton>
     </div>

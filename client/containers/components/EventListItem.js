@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { TableRow, TableRowColumn } from 'material-ui';
-import { Event } from '../../lib/BrickObjects';
+import { Event } from '../../lib/objects';
 
 class EventListItem extends React.Component {
   

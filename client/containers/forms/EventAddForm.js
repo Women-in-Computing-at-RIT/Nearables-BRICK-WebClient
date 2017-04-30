@@ -6,7 +6,7 @@ import moment from 'moment';
 import { TextField, DatePicker, TimePicker } from 'material-ui';
 import { reduxForm, Field } from 'redux-form';
 
-import { keyMirrorTransform, snakeToLowerCamel, Moments } from '../../lib/BrickUtils';
+import { keyMirrorTransform, snakeToLowerCamel, Moments } from '../../lib/utils';
 import Validation from './validations';
 
 export const FormName = 'EventAddForm';
