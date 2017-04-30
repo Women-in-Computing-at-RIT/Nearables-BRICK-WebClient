@@ -4,7 +4,6 @@ import { delay } from 'redux-saga';
 import { replace } from 'react-router-redux';
 
 import invariant from 'invariant';
-import warning from 'warning';
 
 import EventActions from '../redux/Event';
 import AuthActions, { getUser, isLoggedIn } from '../redux/Auth';
@@ -12,7 +11,7 @@ import firebase from '../firebase';
 
 import fbProxy from './firebasePromiseProxy';
 import ensureJson from '../redux/ensureJson';
-import { organizer, organizerPhotos } from '../lib/BrickRefs';
+import { organizer, organizerPhotos } from '../lib/refs';
 
 /**
  * Takes a user and updates their organizer profile with the latest data. This boils down to a set call on

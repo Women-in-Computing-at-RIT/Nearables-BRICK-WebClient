@@ -7,7 +7,7 @@ import AuthActions, { isLoggedIn, getUserInfo } from '../redux/Auth';
 import StartupActions, { StartupTypes } from '../redux/Startup';
 
 import fbProxy from './firebasePromiseProxy';
-import { organizerPhotos, organizerDefaultPhoto } from '../lib/BrickRefs';
+import { organizerPhotos, organizerDefaultPhoto } from '../lib/refs';
 import firebase from '../firebase';
 
 function fetchPhotoUrl({ uid, photoURL }) {
@@ -45,11 +45,12 @@ export function * startupAuth({ payload: { user: userData } }) {
   }
   
   try {
-    user.photoURL = yield call(fetchPhotoUrl, user);
+    if(user)
+      user.photoURL = yield call(fetchPhotoUrl, user);
   } catch(e) {
     // Photo URL Could not be retrieved
     warning(!e, 'Unexpected error attempting to fetch photo url');
-    warning(!e, e);
+    warning(!e, e.message);
   }
   
   try {

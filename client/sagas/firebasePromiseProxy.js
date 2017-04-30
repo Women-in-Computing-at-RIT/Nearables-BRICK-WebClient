@@ -5,7 +5,7 @@
  *
  * call(fbProxy, firebase.auth().signInWithPopup('google'))
  *
- * fbProxy's promise resolves and rejects as Firebase's does, thus the overall effect is identical.
+ * The proxying promise resolves and rejects as Firebase's does, thus the overall effect is identical.
  *
  * @param firebasePromise
  * @returns {Promise}
