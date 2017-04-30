@@ -38,8 +38,8 @@ class EventPage extends React.Component {
     if (!event)
       return <Redirect to="/u"/>;
     
-    const startTimeFull = event.startTime.format('MMM Do, YYYY h:mm:ss A');
-    const endTimeFull = event.endTime.format('MMM Do, YYYY h:mm:ss A');
+    const startTimeFull = event.startTime.format('MMM Do, YYYY h:mm A');
+    const endTimeFull = event.endTime.format('MMM Do, YYYY h:mm A');
     
     const timeRange = `${startTimeFull} - ${endTimeFull}`;
     
@@ -61,6 +61,7 @@ class EventPage extends React.Component {
       | | | | ...
      */
     
+    // TODO Geolocation Page
     return (
       <FluidContainer className={s.container}>
         <Paper className={s.header}>
