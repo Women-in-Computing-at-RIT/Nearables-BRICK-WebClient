@@ -1,15 +1,30 @@
 import cuid from 'cuid';
 import moment from 'moment';
 
-export class Event {
+const defaultLocation = {
+  label: '',
+  location: {
+    lat: 0,
+    lng: 0,
+  },
+  placeId: '',
+};
+
+export default class Event {
   
-  constructor({id = cuid(), name, startTime, duration, location = {}, attackingPoints = 0, defendingPoints = 0}) {
+  /**
+   *
+   * @param {string=} id
+   * @param {string} name
+   * @param {Date|moment.Moment} startTime
+   * @param {number|moment.Duration} duration
+   * @param location
+   */
+  constructor({id = cuid(), name, startTime, duration, location = {...defaultLocation}}) {
     this.id = id;
     this.name = name;
     this.startTime = moment(startTime);
     this.duration = moment.duration(duration);
-    this.attackingPoints = attackingPoints;
-    this.defendingPoints = defendingPoints;
     
     this.location = location;
   }
@@ -35,3 +50,7 @@ export class Event {
     },
   });
 }
+
+export {
+  Event,
+};

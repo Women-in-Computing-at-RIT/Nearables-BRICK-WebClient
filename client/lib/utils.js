@@ -40,11 +40,76 @@ export const snakeToLowerCamel =
     mapExceptFirst(
       pipe(
         mapFirstOnly(toUpper),
-        charArrToString)
+        charArrToString
+      )
     ),
     charArrToString
   );
 export const snakeToUpperCase = pipe(snakeToLowerCamel, toUpper);
+
+export const slugToLowerCamel =
+  pipe(
+    toLower,
+    R.split(/\B-\B/g),
+    mapExceptFirst(
+      pipe(
+        mapFirstOnly(toUpper),
+        charArrToString
+      )
+    ),
+    charArrToString
+  );
+export const slugToUpperCase = pipe(slugToLowerCamel, toUpper);
+
+export const lowerCamelToSlug =
+  pipe(
+    R.replace(/([A-Z])/g, ' $1'),
+    R.split(/\b\s/g),
+    mapExceptFirst(
+      pipe(
+        toLower,
+        R.prepend('-'),
+        charArrToString
+      )
+    ),
+    R.join('')
+  );
+
+
+/**
+ * @template T
+ * @param {[T]} arr
+ * @param {number=} startPoint
+ */
+export function * makeArrayIterator(arr, startPoint = 0) {
+  let idx = startPoint % arr.length;
+  
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    yield arr[idx++];
+    idx %= arr.length;
+  }
+}
+
+/**
+ * @param {number} min Min Inclusive
+ * @param {number} max Max Exclusive
+ * @returns {number} An integer in the range [min, max)
+ */
+export const randomInt = (min, max) => min + Math.floor(Math.random() * (max - min));
+
+/**
+ * @param {[*]} arr
+ * @returns {number}
+ */
+export const randomIndex = (arr) => randomInt(0, arr.length);
+
+/**
+ * @template T
+ * @param {Array<T>} arr
+ * @returns {T}
+ */
+export const randomElement = (arr) => arr[randomIndex(arr)];
 
 /**
  *
