@@ -18,10 +18,8 @@ const babelConfig = Object.assign({}, pkg.babel, {
   cacheDirectory: useHMR,
 });
 
-if(!process.env.PRESERVE_OUTPUT) {
-  const del = require('del');
-  del.sync(['./public/dist/*']);
-}
+const del = require('del');
+del.sync(['./public/dist/*']);
 
 const config = {
   
@@ -33,7 +31,7 @@ const config = {
   
   output: {
     path: path.resolve(__dirname, './public/dist'),
-    publicPath: 'dist/',
+    publicPath: '/dist/',
     filename: isDebug ? '[name].js?[hash]' : '[name].[hash].js',
     chunkFilename: isDebug ? '[id].js?[chunkhash]' : '[id].[chunkhash].js',
     sourcePrefix: '  ',

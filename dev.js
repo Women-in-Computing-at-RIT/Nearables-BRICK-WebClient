@@ -3,16 +3,14 @@ const path = require('path');
 const express = require('express');
 const webpack = require('webpack');
 
-process.env.PRESERVE_OUTPUT = true;
-const config = require('./webpack.config');
-
 const app = express();
 
 if (process.env.NODE_ENV !== 'production') {
+  const config = require('./webpack.config');
   const compiler = webpack(config);
   app.use(require('webpack-dev-middleware')(compiler, {
     stats: config.stats,
-    publicPath: '/' + config.output.publicPath,
+    publicPath: config.output.publicPath,
   }));
   
   app.use(require('webpack-hot-middleware')(compiler));
@@ -20,9 +18,15 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(express.static(path.resolve(__dirname, 'public')));
 }
 
-const staticFileRegex = /^\/dist\/.+\.((?:js)|(?:css)|(?:pcss)|(?:jpg)|(?:jpeg)|(?:png)|(?:wav)|(?:mp3))$/ig;
+const staticFileRegex =
+  /^\/dist\/.+\.((?:js)|(?:css)|(?:pcss)|(?:jpg)|(?:jpeg)|(?:png)|(?:wav)|(?:mp3))(?:\?[\w\d]*)?$/ig;
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.get('*', (req, res, next) => {
-  if(!staticFileRegex.test(req.originalUrl)) {
+  if(req.protocol !== 'webpack' && !staticFileRegex.test(req.originalUrl)) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
   } else
     next();
