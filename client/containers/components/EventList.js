@@ -47,7 +47,6 @@ class EventList extends React.Component {
     onDelete: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
     onAdd: PropTypes.func.isRequired,
-    onQrCode: PropTypes.func.isRequired,
   };
   
   constructor(props) {

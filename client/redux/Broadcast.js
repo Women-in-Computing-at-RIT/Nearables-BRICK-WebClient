@@ -120,22 +120,26 @@ export const reducer = (state = INITIAL_STATE, { type, payload }) => {
   }
 };
 
-const lastOrNone =
+/**
+ * @param {*} x
+ * @returns {?Broadcast}
+ */
+const lastOrNone = (x) =>
   R.ifElse(
     R.pipe(R.length, R.lt(0)),
-    R.last,
+    R.pipe(R.last, (x) => new Broadcast(x)),
     R.always(null)
-  );
+  )(x);
 
 /**
  * @param state
  * @returns {[Broadcast]} All Broadcasts in History
  */
-export const getBroadcasts = (state) => state.broadcasts.broadcastHistory;
+export const getBroadcasts = (state) => state.broadcasts.broadcastHistory.map(x => new Broadcast(x));
 
 /**
  * @param {{broadcasts: {broadcastHistory: Array<Broadcast>}}} state
- * @returns {Broadcast} Most Recent Broadcast
+ * @returns {?Broadcast} Most Recent Broadcast
  */
 export const getLastBroadcast = (state) => lastOrNone(state.broadcasts.broadcastHistory);
 export const hasBroadcasts = (state) => state.broadcasts.broadcastHistory.length > 0;
@@ -143,14 +147,33 @@ export const hasBroadcasts = (state) => state.broadcasts.broadcastHistory.length
 /**
  * @param state
  * @param {Broadcast} broadcast
+ * @returns {boolean} True if timestamp greater than currently known most recent broadcast or true if
+ * getLastBroadcast returns null. False otherwise.
  */
-export const isNewerBroadcast = (state, broadcast) => getLastBroadcast(state).timestamp < broadcast.timestamp;
+export const isNewerBroadcast = (state, broadcast) => {
+  const last = getLastBroadcast(state);
+  
+  if (last == null)
+    return true;
+  else
+    return last.timestamp < broadcast.timestamp;
+};
 
 /**
  * @param state
  * @param {Broadcast} broadcast
+ *
+ * @returns {boolean} True if same as most recent broadcast, false if not or if there is no most recent broadcast
+ * i.e. getLastBroadcast returns null.
  */
-export const isMostRecent = (state, broadcast) => getLastBroadcast(state).id === broadcast.id;
+export const isMostRecent = (state, broadcast) => {
+  const lastBroadcast = getLastBroadcast(state);
+  
+  if (lastBroadcast == null)
+    return false;
+  
+  return lastBroadcast.id === broadcast.id;
+};
 
 /**
  * @param state

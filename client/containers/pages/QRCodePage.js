@@ -106,7 +106,7 @@ class QRCodePage extends React.Component {
       <Paper className={s.qrContainer} zDepth={3}>
         <QRCode value={QRCodes.event(event.id)} level="M" size={354} fgColor="#3e2723" bgColor="#fb8c00"/>
       </Paper>
-      <div className={s.detailsContainer} zdepth={2}>
+      <div className={s.detailsContainer}>
         <Paper className={s.details}>
           <header>{event.name}</header>
           <hr />

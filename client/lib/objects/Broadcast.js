@@ -9,11 +9,11 @@ export const BroadcastTags = keyMirror({
   NOTIFY: null,
 });
 
-export const BroadcastTarget = keyMirror({
-  ATTACKERS: null,
-  DEFENDERS: null,
-  NONE: null,
-});
+const defaultLocation = {
+  lng: 0,
+  lat: 0,
+  rad: Infinity,
+};
 
 export default class Broadcast {
   
@@ -26,10 +26,9 @@ export default class Broadcast {
    * @param {number} lng
    * @param {number} lat
    * @param {number} rad
-   * @param {?string} side
    * @param {?string} action
    */
-  constructor({id = cuid(), eventId, author, message, timestamp = new Date(), spec: {lng = 0, lat = 0, rad = Infinity}, side, action = BroadcastTags.NOTIFY}) {
+  constructor({id = cuid(), eventId, author, message, timestamp = new Date(), spec: {lng, lat, rad} = defaultLocation, action = BroadcastTags.NOTIFY}) {
     this.id = id;
     this.eventId = eventId;
     this.author = author;
@@ -41,15 +40,10 @@ export default class Broadcast {
       rad,
     };
     this.action = action || BroadcastTags.NOT_PROVIDED;
-    this.side = side || BroadcastTarget.NONE;
   }
   
   get isLocationBased() {
     return this.spec.rad !== Infinity;
-  }
-  
-  get isSided() {
-    return this.side !== BroadcastTarget.NONE;
   }
   
   toJSON = () => ({

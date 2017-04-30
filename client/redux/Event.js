@@ -1,6 +1,8 @@
 import keyMirror from 'keymirror';
 import Immutable from 'seamless-immutable';
 
+import { Event } from '../lib/objects';
+
 import ensureJson from './ensureJson';
 import R, {map, propEq, reject, when} from 'ramda';
 
@@ -111,6 +113,6 @@ export const reducer = (state = INITIAL_STATE, action) => {
 
 export const isFullyReady = (state) => isReady(state) && hasCurrentEvent(state);
 export const isReady = (state) => state.events.ready;
-export const getAvailableEvents = (state) => [...state.events.availableEvents];
-export const getCurrentEvent = (state) => state.events.currentEvent;
-export const hasCurrentEvent = (state) => !!getCurrentEvent(state);
+export const getAvailableEvents = (state) => [...state.events.availableEvents].map(x => new Event(x));
+export const getCurrentEvent = (state) => hasCurrentEvent(state) ? new Event(state.events.currentEvent) : null;
+export const hasCurrentEvent = (state) => !!state.events.currentEvent;
