@@ -1,5 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+const Refs = require('./refs');
+
+const PathRefs = Refs.Organizer;
 
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
@@ -15,8 +18,9 @@ const spawn = require('child-process-promise').spawn;
 
 admin.initializeApp(functions.config().firebase);
 
-const gcsPhotoPath = (uid) => `photos/organizers/${uid}`;
-const organizerPath = (uid) => `/organizers/${uid}`;
+const gcsPhotoPath = (uid) => PathRefs.organizerPhotos({ uid });
+const organizerPath = (uid) => PathRefs.organizer({ uid });
+
 const brickStorageBucket = gcs.bucket('brick-game-ea6a1.appspot.com');
 
 exports.createOrganizerPhotoOnCreation = functions.auth.user().onCreate((event) => {

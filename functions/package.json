@@ -6,7 +6,9 @@
     "child-process-promise": "^2.2.1",
     "firebase-admin": "^4.2.1",
     "firebase-functions": "^0.5",
-    "node-fetch": "^1.6.3"
+    "keymirror": "^0.1.1",
+    "node-fetch": "^1.6.3",
+    "ramda": "^0.23.0"
   },
   "private": true
 }
