@@ -11,12 +11,13 @@ export default (history) => {
     startup: require('./Startup').reducer,
     auth: require('./Auth').reducer,
     events: require('./Event').reducer,
+    broadcasts: require('./Broadcast').reducer,
     
     // Redux Form Reducer
     form: formReducer,
     // React Router Redux
     router: routerReducer,
   });
-    
+  
   return configureStore(rootReducer, rootSaga, history);
 };
