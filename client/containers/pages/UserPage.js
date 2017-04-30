@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
+import { Helmet } from 'react-helmet';
 
 import moment from 'moment';
 
@@ -12,8 +13,8 @@ import FluidContainer from '../FluidContainer';
 import EventList from '../components/EventList';
 import EventAddDialog from '../components/EventAddDialog';
 
-import { Event } from '../../lib/BrickObjects';
-import { Moments } from '../../lib/BrickUtils';
+import { Event } from '../../lib/objects';
+import { Moments } from '../../lib/utils';
 
 class UserPage extends React.Component {
   
@@ -71,12 +72,15 @@ class UserPage extends React.Component {
   handleCloseFromAddDialog = () => this.setState({ showAdd: false });
   
   render() {
-    const { events, currentEvent } = this.props;
+    const { events, currentEvent, user } = this.props;
     const { showAdd } = this.state;
     
     // TODO Event Deletion
     return (
       <FluidContainer>
+        <Helmet>
+          <title>{`BRICK -- ${user.displayName}'s Info`}</title>
+        </Helmet>
         <EventList
           events={events}
           currentEvent={currentEvent}
