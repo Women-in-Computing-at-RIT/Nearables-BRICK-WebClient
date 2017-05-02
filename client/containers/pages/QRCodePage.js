@@ -104,7 +104,7 @@ class QRCodePage extends React.Component {
   renderEvent = (event) => (
     <section className={s.container}>
       <Paper className={s.qrContainer} zDepth={3}>
-        <QRCode value={QRCodes.event(event.id)} level="M" size={354} fgColor="#3e2723" bgColor="#fb8c00"/>
+        <QRCode value={QRCodes.event.create(event.id)} level="M" size={354} fgColor="#3e2723" bgColor="#fb8c00"/>
       </Paper>
       <div className={s.detailsContainer}>
         <Paper className={s.details}>
@@ -121,7 +121,7 @@ class QRCodePage extends React.Component {
   );
   
   render() {
-    const {eventId, event, loading, error} = this.state;
+    const { eventId, event, loading, error } = this.state;
     const { loggedIn } = this.props;
     
     if (error)

@@ -1,5 +1,6 @@
 import cuid from 'cuid';
 import GeoFire from 'geofire';
+import moment from 'moment';
 
 export class PointOfInterest {
   
@@ -9,14 +10,16 @@ export class PointOfInterest {
    * @param {number} lng
    * @param {string} name
    * @param {string} description
+   * @param {moment.Duration|number} duration
    * @param {object=} notes
    */
-  constructor({ id = cuid(), lat, lng, name, description, notes = {} }) {
+  constructor({ id = cuid(), lat, lng, name, description, duration, notes = {} }) {
     this.id = id;
     this.lat = lat;
     this.lng = lng;
     this.name = name;
     this.description = description;
+    this.duration = moment.duration(duration);
     this.notes = notes;
   }
   
@@ -37,6 +40,7 @@ export class PointOfInterest {
     lng: this.lng,
     name: this.name,
     description: this.description,
+    duration: this.duration.toJSON(),
     notes: this.notes,
   });
   

@@ -28,7 +28,7 @@ class BroadcastInput extends React.Component {
     const broadcast = new Broadcast({
       eventId,
       author: 'BRICK Team',
-      value,
+      message: value,
     });
     
     onSubmit(broadcast);
@@ -51,8 +51,10 @@ class BroadcastInput extends React.Component {
     
     return (
       <FluidContainer className={s.container}>
-        <Paper zDepth={2}>
+        <Paper className={s.inputContainer} zDepth={2}>
           <TextField
+            className={s.input}
+            
             floatingLabelText="Broadcast Content"
             hintText="What do you want to tell the participants?"
             value={value}
@@ -67,8 +69,9 @@ class BroadcastInput extends React.Component {
             multiLine
           />
         </Paper>
-        <div>
+        <div className={s.sendContainer}>
           <FloatingActionButton
+            className={s.send}
             disabled={confirm || value.length <= 0}
             onTouchTap={this.toggleConfirmation}
             zDepth={2}

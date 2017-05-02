@@ -8,7 +8,7 @@ import { BroadcastTypes } from '../redux/Broadcast';
 import { onAuthSaga, onLogout } from './General';
 import { startupAuth } from './Startup';
 import { loadAndListenEvents, addEventToRemote, removeEventFromRemote } from './Event';
-import { loadAndListenBroadcasts, getBroadcastHistory } from './Broadcast';
+import { loadAndListenBroadcasts, getBroadcastHistory, sendBroadcast } from './Broadcast';
 
 export default function * root() {
   yield [
@@ -23,6 +23,7 @@ export default function * root() {
     // Broadcast Sagas
     takeLatest(EventTypes.SET_CURRENT_EVENT, loadAndListenBroadcasts),
     takeLatest(BroadcastTypes.GET_BROADCAST_HISTORY, getBroadcastHistory),
+    takeLatest(BroadcastTypes.SEND_BROADCAST, sendBroadcast),
     
     // General Sagas (last in sequence)
     // Listen for new credentials and fire off some Authentication

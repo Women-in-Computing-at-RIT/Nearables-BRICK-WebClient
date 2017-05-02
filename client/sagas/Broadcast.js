@@ -13,6 +13,24 @@ import RefPaths, { RefEvents } from '../lib/refs';
 import fbProxy from './firebasePromiseProxy';
 import firebase from '../firebase';
 
+export function * sendBroadcast({ payload }) {
+  const { /** @type Broadcast */ broadcast } = payload;
+  
+  /**
+   * @type {Event}
+   */
+  const event = yield select(getCurrentEvent);
+  const broadcastRef = firebase.database().ref(RefPaths.eventBroadcasts({ id: event.id })).child(broadcast.id);
+  
+  try {
+    yield call(fbProxy, broadcastRef.set(broadcast.toJSON()));
+    yield put(BroadcastActions.receiveOwnBroadcast(broadcast));
+  } catch (e) {
+// eslint-disable-next-line no-console
+    console.error(e);
+  }
+}
+
 /**
  * @param {Event} event
  */
@@ -26,11 +44,9 @@ export function * getBroadcastHistory({ event }) {
   const broadcastRef = firebase.database().ref(RefPaths.eventBroadcasts({ id }));
   
   // Collect Broadcasts for History
-  const history = yield call(fbProxy, broadcastRef.once(RefEvents.VALUE).then(snapshot => {
-    const hist = [];
-    snapshot.forEach((child) => hist.push(new Broadcast(child.val())));
-    return Promise.resolve(hist);
-  }));
+  const history = yield call(fbProxy, broadcastRef.once(RefEvents.VALUE).then(snapshot =>
+    Promise.resolve(Object.values(snapshot.val() || {}))
+  ));
   
   // Set History
   

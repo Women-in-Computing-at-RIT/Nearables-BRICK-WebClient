@@ -1,45 +1,46 @@
 
+import pathToRegexp from 'path-to-regexp';
+
 const prefix = 'brickapp://';
 
-export const QRCodes = {
-  event: (id) => `${prefix}event/${id}`,
-};
+/**
+ * @param {RegExp} re
+ * @param {string} path
+ * @returns {[?string]}
+ */
+const parseQrCodePath = (re, path) => re.exec(path).slice(1);
 
-export class QRCodeData {
-  
-  /**
-   * @param {string} prefix
-   * @param {[string]} parts
-   * @param {string} data
-   * @param {boolean} isValid
-   */
-  constructor(prefix, parts, data, isValid = true) {
-    this.prefix = prefix;
-    this.parts = parts;
-    this.data = data;
-    this.isValid = isValid;
-  }
-  
-  static invalidCode() {
-    return new QRCodeData(null, null, null, false);
-  }
-  
+/**
+ * @param {string} path
+ * @returns {string}
+ */
+const stripPrefix = (path) => path.startsWith(prefix) ? path.substr(prefix.length) : path;
+
+/**
+ * @param {string} pathRe Path string convertible to RegExp using pathToRegexp
+ * @returns {function(string): [?string]}
+ */
+const makeParser = (pathRe) => {
+  const re = pathToRegexp(pathRe);
+  return (path) => parseQrCodePath(re, stripPrefix(path));
 }
 
 /**
- * @param {string} data
- * @returns {QRCodeData}
+ * @param {string} pathRe Path string convertible to RegExp using pathToRegexp
+ * @returns {function(object): string}
  */
-export function parseQRCode(data) {
-  if (!data.startsWith(prefix))
-    return QRCodeData.invalidCode();
-  
-  const pathData = data.slice(prefix.length);
-  /** @type {[string]} */
-  const parts = pathData.split('/');
-  
-  if (parts.length <= 1)
-    parts.unshift('');
-  
-  return new QRCodeData(prefix, [...parts], parts.pop());
-}
+const makeFormatter = (pathRe) => {
+  const compiler = pathToRegexp.compile(pathRe);
+  return (params) => `${prefix}${compiler(params)}`;
+};
+
+/**
+ * @enum {{ format: function(object):string, parse: function(string): [?string], create: Function<string> }}
+ */
+export const QRCodes = {
+  event: {
+    format: makeFormatter('event/:eventId'),
+    parse: makeParser('event/:eventId'),
+    create: (eventId) => QRCodes.event.format({ eventId }),
+  },
+};

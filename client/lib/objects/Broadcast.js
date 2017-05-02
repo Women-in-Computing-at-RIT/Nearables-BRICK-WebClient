@@ -22,24 +22,31 @@ export default class Broadcast {
    * @param {string} eventId
    * @param {string} author
    * @param {string} message
+   * @param {number} expiry
    * @param {number|Date} timestamp
    * @param {number} lng
    * @param {number} lat
    * @param {number} rad
    * @param {?string} action
    */
-  constructor({id = cuid(), eventId, author, message, timestamp = new Date(), spec: {lng, lat, rad} = defaultLocation, action = BroadcastTags.NOTIFY}) {
+  constructor({id = cuid(), eventId, author, message, expiry = Infinity, timestamp = Date.now(), spec: {lng, lat, rad} = defaultLocation, action = BroadcastTags.NOTIFY}) {
     this.id = id;
     this.eventId = eventId;
     this.author = author;
     this.message = message;
-    this.timestamp = moment(timestamp).milliseconds();
+    this.timestamp = moment(timestamp).valueOf();
     this.spec = {
       lng,
       lat,
-      rad,
+      rad: rad === -1 ? Infinity : rad,
     };
+    this.expiry = expiry;
     this.action = action || BroadcastTags.NOT_PROVIDED;
+  }
+  
+  get isExpired() {
+    const now = moment();
+    return this.expiry !== Infinity && now.isSameOrBefore(moment(this.timestamp).add(moment.duration(this.expiry)));
   }
   
   get isLocationBased() {
@@ -52,9 +59,12 @@ export default class Broadcast {
     author: this.author,
     message: this.message,
     timestamp: this.timestamp,
-    spec: this.spec,
+    spec: {
+      lat: this.spec.lat,
+      lng: this.spec.lng,
+      rad: this.spec.rad === Infinity ? -1 : this.spec.rad,
+    },
     action: this.action,
-    side: this.side,
   });
 }
 

@@ -25,6 +25,13 @@
     font-weight: 400;
     margin: 0;
   }
+
+  & > .backButton {
+    position: absolute;
+    align-self: flex-start;
+
+    margin-left: 30px;
+  }
 }
 
 .qrcode {
@@ -48,9 +55,9 @@
 .broadcastContainer {
   display: flex;
   flex-direction: column;
+  flex: 1;
   margin: 10px 20px;
 
-  height: 30vh;
   min-height: 200px;
 }
 
@@ -60,4 +67,8 @@
   margin: 10px 20px;
 
   min-height: 400px;
+}
+
+.history {
+  display: flex;
 }

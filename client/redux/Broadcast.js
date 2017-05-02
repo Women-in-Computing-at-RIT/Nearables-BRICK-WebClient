@@ -84,10 +84,19 @@ const INITIAL_STATE = Immutable({
 const orderByTime = R.sortBy(R.prop('timestamp'));
 
 /**
- * @template T
- * @type {function(Array<T>):Array<T>}
+ * @type {function([Broadcast]):[Broadcast]}
  */
-const forceToSet = R.uniqWith(R.prop('id'));
+const forceToSet = (x) => {
+  const knownIds = new Set();
+  const result = [];
+  for (const /** @type Broadcast */ elem of x) {
+    if (!knownIds.has(elem.id)) {
+      knownIds.add(elem.id);
+      result.push(elem);
+    }
+  }
+  return result;
+};
 
 /**
  * @param state
@@ -135,7 +144,7 @@ const lastOrNone = (x) =>
  * @param state
  * @returns {[Broadcast]} All Broadcasts in History
  */
-export const getBroadcasts = (state) => state.broadcasts.broadcastHistory.map(x => new Broadcast(x));
+export const getBroadcasts = (state) => R.map(x => new Broadcast(x), state.broadcasts.broadcastHistory);
 
 /**
  * @param {{broadcasts: {broadcastHistory: Array<Broadcast>}}} state
